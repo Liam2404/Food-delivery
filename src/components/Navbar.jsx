@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
+import logo from '../assets/logo.png';
+
 function Navbar() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [username, setUsername] = useState('');
@@ -13,11 +15,13 @@ function Navbar() {
   const handleLoginShow = () => setShowLoginModal(true);
 
   const handleLogin = () => {
-    // futur logique de connection ici
+    // Future login logic here
   };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white">
+      <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
+
       <Link className="navbar-brand" to="/">
         Accueil
       </Link>
