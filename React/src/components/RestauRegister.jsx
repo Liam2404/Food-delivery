@@ -72,7 +72,6 @@ export default function RestaurantRegister({ show, handleClose, setRestaurant })
       {error && <p className="text-danger">{error}</p>}
     </form>
   );
-
   return (
     <>
       {show !== undefined ? (
@@ -92,7 +91,6 @@ export default function RestaurantRegister({ show, handleClose, setRestaurant })
         </Modal>
       ) : (
         <>
-          <Navbar />
           <div className="d-flex justify-content-center align-items-center vh-100">
             <form style={{ width: '300px' }}>
               <h2 className="text-center">Inscription Restaurant</h2>
