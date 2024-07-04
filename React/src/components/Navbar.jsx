@@ -2,82 +2,93 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-
-import Register from './Register';
-import RestaurantRegister from './RestauRegister';
+import Form from 'react-bootstrap/Form';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
 import logo from '../assets/logo.png';
 
-function Navbar({ handleLogin, setUsername, setPassword, username, password, error }) {
+function CustomNavbar({ handleLogin, setUsername, setPassword, username, password, error }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [showRestaurantRegisterModal, setShowRestaurantRegisterModal] = useState(false);
+  const [email, setEmail] = useState('');
+  const [confirmEmail, setConfirmEmail] = useState('');
 
   const handleLoginClose = () => setShowLoginModal(false);
   const handleLoginShow = () => setShowLoginModal(true);
 
-  const handleRegisterClose = () => setShowRegisterModal(false);
-  const handleRegisterShow = () => setShowRegisterModal(true);
+  const handleRegisterClose = () => {
+    setShowRegisterModal(false);
+    setEmail('');
+    setConfirmEmail('');
+  };
 
-  const handleRestaurantRegisterClose = () => setShowRestaurantRegisterModal(false);
-  const handleRestaurantRegisterShow = () => setShowRestaurantRegisterModal(true);
+  const handleRegisterShow = () => {
+    setShowLoginModal(false);
+    setShowRegisterModal(true);
+  };
+
+  const handleRegister = () => {
+    if (email.trim() === '') {
+      setError('Veuillez entrer une adresse email.');
+      return;
+    }
+    if (email !== confirmEmail) {
+      setError('Les adresses email ne correspondent pas.');
+      return;
+    }
+    // Handle registration logic here
+    alert('Inscription soumise');
+    handleRegisterClose();
+  };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-white">
-      <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
-
-      <Link className="navbar-brand" to="/">
+    <Navbar bg="white" expand="lg">
+      <Navbar.Brand as={Link} to="/">
+        <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
         Accueil
-      </Link>
-
-      <div className="ml-auto">
-        <Button variant="primary" onClick={handleLoginShow}>
-          Connexion Client
-        </Button>
-        <Button variant="success" onClick={handleRegisterShow} className="ml-2">
-          Inscription Client
-        </Button>
-        <Link to="/restaurant/login">
-          <Button variant="secondary" className="ml-2">
-            Connexion Restaurant
+      </Navbar.Brand>
+      <Navbar.Toggle aria-controls="basic-navbar-nav" />
+      <Navbar.Collapse id="basic-navbar-nav">
+        <Nav className="ml-auto container d-flex justify-content-between">
+          <Button variant="primary" onClick={handleLoginShow} className="mr-2">
+            Connexion Client
           </Button>
-        </Link>
-        <Link to="/restaurant/register">
-          <Button variant="info" className="ml-2">
-            Inscription Restaurant
-          </Button>
-        </Link>
-      </div>
+          <br/>
+          <Link to="/restaurant/section-speciale" className="btn btn-dark ml-2">
+            Section Spéciale Entreprise
+          </Link>
+        </Nav>
+      </Navbar.Collapse>
 
+      {/* Modal de Connexion */}
       <Modal show={showLoginModal} onHide={handleLoginClose}>
         <Modal.Header closeButton>
           <Modal.Title>Connexion Client</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form>
-            <div className="form-group">
-              <label htmlFor="username">Nom d'utilisateur ou email</label>
-              <input
+          <Form>
+            <Form.Group controlId="formUsername">
+              <Form.Label>Nom d'utilisateur ou email</Form.Label>
+              <Form.Control
                 type="text"
-                className="form-control"
-                id="username"
+                placeholder="Entrez votre nom d'utilisateur ou email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                autoComplete="username email"
+                autoComplete="username"
               />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">Mot de passe</label>
-              <input
+            </Form.Group>
+            <Form.Group controlId="formPassword">
+              <Form.Label>Mot de passe</Form.Label>
+              <Form.Control
                 type="password"
-                className="form-control"
-                id="password"
+                placeholder="Entrez votre mot de passe"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
               />
-            </div>
+            </Form.Group>
             {error && <p className="text-danger">{error}</p>}
-          </form>
+          </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleLoginClose}>
@@ -86,13 +97,69 @@ function Navbar({ handleLogin, setUsername, setPassword, username, password, err
           <Button variant="primary" onClick={handleLogin}>
             Se connecter
           </Button>
+          <Button variant="link" onClick={handleRegisterShow}>
+            Pas encore de compte ? Inscrivez-vous ici.
+          </Button>
         </Modal.Footer>
       </Modal>
 
-      <Register show={showRegisterModal} handleClose={handleRegisterClose} setUser={() => {}} />
-      <RestaurantRegister show={showRestaurantRegisterModal} handleClose={handleRestaurantRegisterClose} setRestaurant={() => {}} />
-    </nav>
+      {/* Modal d'Inscription */}
+      <Modal show={showRegisterModal} onHide={handleRegisterClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Inscription Client</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formEmail">
+              <Form.Label>Adresse email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Entrez votre adresse email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </Form.Group>
+            <Form.Group controlId="formConfirmEmail">
+              <Form.Label>Confirmer adresse email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Confirmez votre adresse email"
+                value={confirmEmail}
+                onChange={(e) => setConfirmEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </Form.Group>
+            <Form.Group controlId="formUsername">
+              <Form.Label>Nom d'utilisateur</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Entrez votre nom d'utilisateur"
+                autoComplete="username"
+              />
+            </Form.Group>
+            <Form.Group controlId="formPassword">
+              <Form.Label>Mot de passe</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Entrez votre mot de passe"
+                autoComplete="new-password"
+              />
+            </Form.Group>
+            {error && <p className="text-danger">{error}</p>}
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleRegisterClose}>
+            Fermer
+          </Button>
+          <Button variant="primary" onClick={handleRegister}>
+            S'inscrire
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </Navbar>
   );
 }
 
-export default Navbar;
+export default CustomNavbar;

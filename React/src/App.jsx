@@ -1,9 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import RestaurantLogin from './components/RestauLogin.jsx';
-import RestraurantRegister from './components/RestauRegister.jsx'
-import Login from './components/Login.jsx';
-import Home from './pages/Home.jsx';
+import SectionSpecialeEntreprise from './components/SectionEntreprise';
+import RestaurantLogin from './components/RestauLogin';
+import RestaurantRegister from './components/RestauRegister';
+import Login from './components/Login';
+import Home from './pages/Home';
 import './App.css';
 
 export default function App() {
@@ -11,7 +12,8 @@ export default function App() {
     <div>
       <BrowserRouter>
         <Routes>
-          <Route path="/restaurant/register" element={<RestraurantRegister />} />
+          <Route path="/restaurant/section-speciale" element={<SectionSpecialeEntreprise />} />
+          <Route path="/restaurant/register" element={<RestaurantRegister />} />
           <Route path="/restaurant/login" element={<RestaurantLogin />} />
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Home />} />
