@@ -2,33 +2,25 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-
 import logo from '../assets/logo.png';
+import Register from './Register'; 
 
-function Navbar() {
+function Navbar({ handleLogin, handleLogout, setIdentifier, setPassword, identifier, password, error }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [showRegisterModal, setShowRegisterModal] = useState(false); 
 
   const handleLoginClose = () => setShowLoginModal(false);
   const handleLoginShow = () => setShowLoginModal(true);
-
-  const handleLogin = () => {
-    // Future login logic here
-  };
+  const handleRegisterClose = () => setShowRegisterModal(false); 
+  const handleRegisterShow = () => setShowRegisterModal(true); 
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white">
       <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
+      <Link className="navbar-brand" to="/">Accueil</Link>
 
-      <Link className="navbar-brand" to="/">
-        Accueil
-      </Link>
-
-      <Button variant="primary" onClick={handleLoginShow}>
-        Se connecter
-      </Button>
+      <Button variant="primary" onClick={handleLoginShow}>Se connecter</Button>
+      <Button variant="secondary" onClick={handleRegisterShow}>S'inscrire</Button> 
 
       <Modal show={showLoginModal} onHide={handleLoginClose}>
         <Modal.Header closeButton>
@@ -37,14 +29,14 @@ function Navbar() {
         <Modal.Body>
           <form>
             <div className="form-group">
-              <label htmlFor="username">Nom d'utilisateur</label>
+              <label htmlFor="identifier">Nom d'utilisateur ou email</label>
               <input
                 type="text"
                 className="form-control"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                autoComplete="username"
+                id="identifier"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                autoComplete="username email"
               />
             </div>
             <div className="form-group">
@@ -62,14 +54,12 @@ function Navbar() {
           </form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleLoginClose}>
-            Fermer
-          </Button>
-          <Button variant="primary" onClick={handleLogin}>
-            Se connecter
-          </Button>
+          <Button variant="secondary" onClick={handleLoginClose}>Fermer</Button>
+          <Button variant="primary" onClick={handleLogin}>Se connecter</Button>
         </Modal.Footer>
       </Modal>
+
+      <Register show={showRegisterModal} handleClose={handleRegisterClose} /> 
     </nav>
   );
 }

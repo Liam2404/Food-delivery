@@ -5,7 +5,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 
 const RestaurantMenu = ({ restaurant, handleCloseMenuSidebar }) => {
   const [cart, setCart] = useState([]);
-  
+
   // Fonction pour ajouter un plat au panier
   const addToCart = (item) => {
     const updatedCart = [...cart, item];
@@ -62,9 +62,17 @@ const RestaurantMenu = ({ restaurant, handleCloseMenuSidebar }) => {
         <Button variant="secondary" onClick={handleCloseMenuSidebar}>
           Fermer
         </Button>
-        <Button variant="primary" onClick={() => { /* Action pour commander */ }}>
+        <Button
+          variant="primary"
+          onClick={() => {
+            const userId = user.id; // Assurez-vous que user est défini
+            const url = `https://buy.stripe.com/test_7sI16We6Ah0LfDi3cc?client_reference_id=${userId}`;
+            window.location.href = url;
+          }}
+        >
           Commander
         </Button>
+
       </Modal.Footer>
     </Modal>
   );
