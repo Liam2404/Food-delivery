@@ -5,7 +5,6 @@ import Navbar from './Navbar';
 function SectionSpecialeEntreprise() {
   return (
     <>
-      <Navbar />
       <div className="d-flex flex-column justify-content-center align-items-center vh-100">
         <h1 className="mb-4 text-center">Section Spéciale Entreprise</h1>
         <div className="container d-flex flex-column justify-content-center align-items-center">

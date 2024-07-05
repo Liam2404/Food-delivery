@@ -3,11 +3,9 @@ import { Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
 import logo from '../assets/logo.png';
 
-function CustomNavbar({ handleLogin, setUsername, setPassword, username, password, error }) {
+function Navbar({ handleLogin, setUsername, setPassword, username, password, error }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [email, setEmail] = useState('');
@@ -42,23 +40,24 @@ function CustomNavbar({ handleLogin, setUsername, setPassword, username, passwor
   };
 
   return (
-    <Navbar bg="white" expand="lg">
-      <Navbar.Brand as={Link} to="/">
-        <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
+    <nav className="navbar navbar-expand-lg navbar-light bg-white">
+      <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
+
+      <Link className="navbar-brand" to="/">
         Accueil
-      </Navbar.Brand>
-      <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="ml-auto container d-flex justify-content-between">
-          <Button variant="primary" onClick={handleLoginShow} className="mr-2">
-            Connexion Client
+      </Link>
+
+      <div className="ml-auto container d-flex justify-content-between">
+        <Button variant="primary" onClick={handleLoginShow}>
+          Connexion Client
+        </Button>
+
+        <Link to="/restaurant/section-speciale">
+          <Button variant="dark" className="ml-2">
+            Section Spéciale Entreprise
           </Button>
-          <br/>
-          <Link to="/restaurant/section-speciale" className="btn btn-dark ml-2">
-            Vous êtes un restaurateur
-          </Link>
-        </Nav>
-      </Navbar.Collapse>
+        </Link>
+      </div>
 
       {/* Modal de Connexion */}
       <Modal show={showLoginModal} onHide={handleLoginClose}>
@@ -158,8 +157,8 @@ function CustomNavbar({ handleLogin, setUsername, setPassword, username, passwor
           </Button>
         </Modal.Footer>
       </Modal>
-    </Navbar>
+    </nav>
   );
 }
 
-export default CustomNavbar;
+export default Navbar;

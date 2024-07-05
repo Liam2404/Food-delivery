@@ -2,11 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
 import mysql from 'mysql';
 import userRouter from './Router/user.js';
 import stripeRouter from './Router/stripe.js';
-
+import restauRouter from './Router/restau.js';
 
 const app = express();
 const port = 3000;
@@ -24,36 +23,43 @@ app.use(cookieParser());
 
 // Middleware pour gérer les sessions
 app.use(session({
-    secret: 'secret',
+    secret: 'secret', // Changez ceci pour un secret plus sécurisé
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: { secure: false }, // Modifiez pour 'secure: true' en production avec HTTPS
 }));
 
-// Configuration de la connexion à la base de données
-const connection = mysql.createConnection({
+// Configuration de la connexion à la base de données avec pool de connexions
+export const db = mysql.createPool({
+    connectionLimit: 10, // Limite de connexions simultanées
     host: 'localhost',
     user: 'root',
+    password: '',
+    port: '3306',
     database: 'food'
 });
 
-// Connexion à la base de données
-connection.connect(err => {
-    if (err) {
-        console.error('Erreur lors de la connexion à la base de données :', err);
-    } else {
-        console.log('Connexion établie avec la base de données');
-    }
+// Middleware pour rendre la pool de connexions disponible dans les routes
+app.use((req, res, next) => {
+    req.db = db;
+    next();
 });
 
+// Routes pour Stripe Webhook
 app.use('/webhook', stripeRouter);
 
-app.use(bodyParser.json());
+// Middleware pour parser les corps de requête JSON
+app.use(express.json());
+
+// Routes pour les utilisateurs
 app.use('/api/user', userRouter);
+
+// Routes pour les restaurants
+app.use('/api/restaurant', restauRouter);
 
 // Écoute du serveur sur le port spécifié
 app.listen(port, () => {
     console.log(`Le serveur écoute sur le port ${port}`);
 });
 
-export default connection
+export default db;

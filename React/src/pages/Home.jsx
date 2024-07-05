@@ -64,7 +64,6 @@ export default function HomePage() {
 
   return (
     <>
-      <Navbar />
       <section className="container mt-4">
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {restaurants.map(restaurant => (
