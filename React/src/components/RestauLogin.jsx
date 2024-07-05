@@ -5,6 +5,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Navbar from './Navbar';
 
+
 export default function RestaurantLogin({ show, handleClose }) {
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -24,8 +25,8 @@ export default function RestaurantLogin({ show, handleClose }) {
 
             if (response.ok) {
                 const data = await response.json();
-                // Stocker les informations de connexion ou rediriger
-                navigate('/restauAdmin');
+                navigate('/');
+                console.log(navigate);
             } else {
                 const data = await response.json();
                 setError(data.message);
@@ -65,35 +66,17 @@ export default function RestaurantLogin({ show, handleClose }) {
     );
 
     return (
+
         <>
-            {show !== undefined ? (
-                <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Connexion Restaurant</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>{loginForm}</Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                            Fermer
-                        </Button>
-                        <Button variant="primary" onClick={handleLogin}>
-                            Se connecter
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-            ) : (
-                <>
-                    <div className="d-flex justify-content-center align-items-center vh-100">
-                        <Form style={{ width: '300px' }}>
-                            <h2 className="text-center">Connexion Restaurant</h2>
-                            {loginForm}
-                            <Button variant="primary" onClick={handleLogin} className="mt-3 w-100">
-                                Se connecter
-                            </Button>
-                        </Form>
-                    </div>
-                </>
-            )}
+            <div className="d-flex justify-content-center align-items-center vh-100">
+                <Form style={{ width: '300px' }}>
+                    <h2 className="text-center">Connexion Restaurant</h2>
+                    {loginForm}
+                    <Button variant="primary" onClick={handleLogin} className="mt-3 w-100">
+                        Se connecter
+                    </Button>
+                </Form>
+            </div>
         </>
     );
 }

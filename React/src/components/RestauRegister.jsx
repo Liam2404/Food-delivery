@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
-export default function RestaurantRegister({ show, handleClose }) {
+export default function RestaurantRegister() {
   const [name, setName] = useState('');
   const [email_address, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,7 +27,6 @@ export default function RestaurantRegister({ show, handleClose }) {
         const data = await response.json();
         register(data);
         navigate('/restauAdmin');
-        if (handleClose) handleClose();
       } else {
         const data = await response.json();
         setError(data.message);
@@ -79,22 +78,7 @@ export default function RestaurantRegister({ show, handleClose }) {
 
   return (
     <>
-      {show !== undefined ? (
-        <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Inscription Restaurant</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>{registerForm}</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Fermer
-            </Button>
-            <Button variant="primary" onClick={handleRegister}>
-              S'inscrire
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      ) : (
+    
         <div className="d-flex justify-content-center align-items-center vh-100">
           <form style={{ width: '300px' }}>
             <h2 className="text-center">Inscription Restaurant</h2>
@@ -104,7 +88,6 @@ export default function RestaurantRegister({ show, handleClose }) {
             </Button>
           </form>
         </div>
-      )}
     </>
   );
 }

@@ -3,11 +3,11 @@ import bcrypt from 'bcryptjs';
 
 
 const restaurantLogin = async (req, res) => {
-    const { email_address, password } = req.body;
-
+    const { usernameOrEmail, password } = req.body;
+    console.log(req.body)
     try {
         const sql = `SELECT * FROM restaurant WHERE email_address = ?`;
-        db.query(sql, [email_address], async (err, results) => {
+        db.query(sql, [usernameOrEmail], async (err, results) => {
             if (err) {
                 console.error('Erreur lors de la recherche du compte restaurant:', err);
                 return res.status(500).send({ message: 'Erreur lors de la connexion au compte restaurant' });
