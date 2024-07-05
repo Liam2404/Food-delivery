@@ -25,7 +25,7 @@ export default function RestaurantLogin({ show, handleClose }) {
             if (response.ok) {
                 const data = await response.json();
                 // Stocker les informations de connexion ou rediriger
-                navigate('/restaurant/dashboard');
+                navigate('/restauAdmin');
             } else {
                 const data = await response.json();
                 setError(data.message);
