@@ -4,7 +4,7 @@ import connection from "../index.js";
 const loginUser = async (req, res) => {
     const { username, password } = req.body;
     console.log(req.body);
-    connection.query('SELECT * FROM user WHERE username = ? AND password = ?', [username, password], (error, results) => {
+    connection.query('SELECT * FROM client WHERE username = ? AND password = ?', [username, password], (error, results) => {
         if (error) {
             console.error('Erreur lors de la connexion de l\'utilisateur :', error);
             res.status(500).send('Erreur serveur');
@@ -21,9 +21,9 @@ const loginUser = async (req, res) => {
 };
 
 const userUpdate = async (req, res) => {
-    const userId = req.params.id;
-    const updatedUser = req.body;
-    connection.query('UPDATE user SET ? WHERE id = ?', [updatedUser, userId], (error, results) => {
+    const clientId = req.params.id;
+    const updatedClient = req.body;
+    connection.query('UPDATE client SET ? WHERE id = ?', [updatedClient, clientId], (error, results) => {
         if (error) {
             console.error('Erreur lors de la mise à jour de l\'utilisateur :', error);
             res.status(500).send('Erreur serveur');
@@ -35,7 +35,7 @@ const userUpdate = async (req, res) => {
 
 const userDelete = async (req, res) => {
     const userId = req.params.id;
-    connection.query('DELETE FROM user WHERE id = ?', [userId], (error, results) => {
+    connection.query('DELETE FROM client WHERE id = ?', [clientId], (error, results) => {
         if (error) {
             console.error('Erreur lors de la suppression de l\'utilisateur :', error);
             res.status(500).send('Erreur serveur');
@@ -46,8 +46,8 @@ const userDelete = async (req, res) => {
 };
 
 const userRegister = async (req, res) => {
-    const newUser = req.body;
-    connection.query('INSERT INTO user SET ?', newUser, (error, results) => {
+    const newClient = req.body;
+    connection.query('INSERT INTO client SET ?', newClient, (error, results) => {
         if (error) {
             console.error('Erreur lors de l\'inscription de l\'utilisateur :', error);
             res.status(500).send('Erreur serveur');
@@ -60,7 +60,7 @@ const userRegister = async (req, res) => {
 const userInfo = async (req, res) => {
     const { username, password } = req.body;
     console.log(req.body);
-    connection.query('SELECT * FROM user WHERE username = ? AND password = ?', [username, password], (error, results) => {
+    connection.query('SELECT * FROM client WHERE username = ? AND password = ?', [username, password], (error, results) => {
         if (error) {
             console.error('Erreur lors de la connexion de l\'utilisateur :', error);
             res.status(500).send('Erreur serveur');
@@ -77,8 +77,8 @@ const userInfo = async (req, res) => {
 };
 
 const getUserbyId = async (req, res) => {
-    const userId = req.params.id;
-    connection.query('SELECT * FROM user WHERE id = ?', [userId], (error, results) => {
+    const clientId = req.params.id;
+    connection.query('SELECT * FROM client WHERE id = ?', [clientId], (error, results) => {
         if (error) {
             console.error('Erreur lors de la récupération de l\'utilisateur :', error);
             res.status(500).send('Erreur serveur');
@@ -93,7 +93,7 @@ const getUserbyId = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-    connection.query('SELECT * FROM user', (error, results) => {
+    connection.query('SELECT * FROM client', (error, results) => {
         if (error) {
             console.error('Erreur lors de la récupération des utilisateurs :', error);
             res.status(500).send('Erreur serveur');

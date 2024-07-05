@@ -55,7 +55,7 @@ function CustomNavbar({ handleLogin, setUsername, setPassword, username, passwor
           </Button>
           <br/>
           <Link to="/restaurant/section-speciale" className="btn btn-dark ml-2">
-            Section Spéciale Entreprise
+            Vous êtes un restaurateur
           </Link>
         </Nav>
       </Navbar.Collapse>

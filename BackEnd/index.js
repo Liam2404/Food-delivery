@@ -34,7 +34,7 @@ app.use(session({
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    database: ''
+    database: 'food'
 });
 
 // Connexion à la base de données
@@ -57,4 +57,3 @@ app.listen(port, () => {
 });
 
 export default connection
-
