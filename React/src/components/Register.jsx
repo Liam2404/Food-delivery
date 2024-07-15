@@ -2,20 +2,14 @@ import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-export default function Register({ show, handleClose, handleRegister }) {
+
+export default function Register({ show, handleClose }) {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await handleRegister({ email, username, password });
-      handleClose();
-    } catch (error) {
-      setError('Erreur lors de la création du compte');
-    }
+  const handleRegister = async () => {
   };
 
   return (
@@ -62,7 +56,7 @@ export default function Register({ show, handleClose, handleRegister }) {
             />
           </div>
           {error && <p className="text-danger">{error}</p>}
-          <Button variant="primary" type="submit">
+          <Button variant="primary" onClick={handleRegister}>
             S'inscrire
           </Button>
         </form>

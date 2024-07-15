@@ -1,10 +1,10 @@
 import { db } from "../index.js";
 import bcrypt from 'bcryptjs';
 
-
+// Fonction de login
 const restaurantLogin = async (req, res) => {
     const { usernameOrEmail, password } = req.body;
-    console.log(req.body)
+    console.log(req.body);
     try {
         const sql = `SELECT * FROM restaurant WHERE email_address = ?`;
         db.query(sql, [usernameOrEmail], async (err, results) => {
@@ -18,32 +18,34 @@ const restaurantLogin = async (req, res) => {
             }
             
             const hashedPassword = results[0].password;
-
             const passwordMatch = await bcrypt.compare(password, hashedPassword);
             
             if (!passwordMatch) {
                 return res.status(401).send({ message: 'Mot de passe incorrect' });
             }
 
-            const { id, name, email_address } = results[0];
-            res.status(200).json({ id, name, email_address });
-        });
+            // Si l'authentification réussit, enregistrer l'utilisateur dans la session
+            req.session.user = {
+                id: results[0].id,
+                name: results[0].name,
+                email_address: results[0].email_address
+            };
 
+            res.status(200).json({ id: results[0].id, name: results[0].name, email_address: results[0].email_address });
+        });
     } catch (error) {
         console.error('Erreur lors de la connexion au compte restaurant:', error);
         res.status(500).send({ message: 'Erreur lors de la connexion au compte restaurant' });
     }
 };
 
-
+// Fonction de registre
 const restaurantRegister = async (req, res) => {
     const { name, email_address, password } = req.body;
-
     try {
         const hashedPassword = await bcrypt.hash(password, 10); // nombre de tours de hashage
-
-        const sql = `INSERT INTO restaurant (name, email_address, password) VALUES ('${name}', '${email_address}', '${hashedPassword}')`;
-        db.query(sql, (err, result) => {
+        const sql = `INSERT INTO restaurant (name, email_address, password) VALUES (?, ?, ?)`;
+        db.query(sql, [name, email_address, hashedPassword], (err, result) => {
             if (err) {
                 console.error('Erreur lors de l\'insertion dans la base de données:', err);
                 res.status(500).send({ message: 'Erreur lors de la création du compte restaurant' });
@@ -57,11 +59,11 @@ const restaurantRegister = async (req, res) => {
     }
 };
 
-
+// Fonction de suppression de restaurant
 const restaurantDelete = async (req, res) => {
     const { id } = req.params;
-    const sql = `DELETE FROM restaurant WHERE id = ${id}`;
-    db.query(sql, (err, result) => {
+    const sql = `DELETE FROM restaurant WHERE id = ?`;
+    db.query(sql, [id], (err, result) => {
         if (err) {
             res.status(500).json({ error: err.message });
         } else {
@@ -70,23 +72,31 @@ const restaurantDelete = async (req, res) => {
     });
 };
 
+// Fonction de mise à jour de restaurant
 const restaurantUpdate = async (req, res) => {
     const { id } = req.params;
     const { name, email_address, password } = req.body;
-    const sql = `UPDATE restaurant SET name = '${name}', email_address = '${email_address}', password = '${password}' WHERE id = ${id}`;
-    db.query(sql, (err, result) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-        } else {
-            res.status(200).json(result);
-        }
-    });
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const sql = `UPDATE restaurant SET name = ?, email_address = ?, password = ? WHERE id = ?`;
+        db.query(sql, [name, email_address, hashedPassword, id], (err, result) => {
+            if (err) {
+                res.status(500).json({ error: err.message });
+            } else {
+                res.status(200).json(result);
+            }
+        });
+    } catch (error) {
+        console.error('Erreur lors du hashage du mot de passe:', error);
+        res.status(500).send({ message: 'Erreur lors de la mise à jour du compte restaurant' });
+    }
 };
 
+// Fonction d'information de restaurant
 const restaurantInfo = async (req, res) => {
     const { id } = req.params;
-    const sql = `SELECT * FROM restaurant WHERE id = ${id}`;
-    db.query(sql, (err, result) => {
+    const sql = `SELECT * FROM restaurant WHERE id = ?`;
+    db.query(sql, [id], (err, result) => {
         if (err) {
             res.status(500).json({ error: err.message });
         } else {
@@ -95,6 +105,7 @@ const restaurantInfo = async (req, res) => {
     });
 };
 
+// Fonction pour récupérer tous les restaurants
 const restaurantAll = async (req, res) => {
     const sql = `SELECT * FROM restaurant`;
     db.query(sql, (err, result) => {
@@ -106,6 +117,7 @@ const restaurantAll = async (req, res) => {
     });
 };
 
+// Fonction pour ajouter un repas
 const addMeal = async (req, res) => {
     const { meal_name, meal_description, meal_price, meal_img, restaurant_id } = req.body;
     try {
@@ -124,6 +136,7 @@ const addMeal = async (req, res) => {
     }
 };
 
+// Fonction pour mettre à jour un repas
 const updateMeal = async (req, res) => {
     const { id } = req.params;
     const { meal_name, meal_description, meal_price, meal_img } = req.body;
@@ -138,6 +151,7 @@ const updateMeal = async (req, res) => {
     }
 };
 
+// Fonction pour supprimer un repas
 const deleteMeal = async (req, res) => {
     const { id } = req.params;
     try {
@@ -149,6 +163,7 @@ const deleteMeal = async (req, res) => {
     }
 };
 
+// Fonction pour récupérer les repas par restaurant
 const getMealsByRestaurant = async (req, res) => {
     const { restaurantId } = req.params;
     try {
@@ -164,6 +179,7 @@ const getMealsByRestaurant = async (req, res) => {
     }
 };
 
+// Fonction pour récupérer les repas par ID
 const getMealsById = async (req, res) => {
     const { id } = req.params;
     try {

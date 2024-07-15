@@ -1,32 +1,48 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SectionSpecialeEntreprise from './components/SectionEntreprise';
 import RestaurantLogin from './components/RestauLogin';
 import RestaurantRegister from './components/RestauRegister';
 import Login from './components/Login';
+import Register from './components/Register';
 import Home from './pages/Home';
 import Navbar from './components/Navbar';
 import RestauPannel from './components/RestauPannel';
-import PrivateRoute from './components/PrivateRoute';
-import { AuthProvider } from './components/AuthContext';
+import Footer from './components/Footer'; 
 import './App.css';
 
-export default function App() {
+function App() {
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    window.location.reload();
+  };
+
+useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      console.log('Logged in user:', user);
+    }
+  }, []);
+  
   return (
     <div>
-      <AuthProvider>
-        <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/restauAdmin" element={<PrivateRoute element={RestauPannel} />} />
-            <Route path="/restaurant/section-speciale" element={<SectionSpecialeEntreprise />} />
-            <Route path="/restaurant/register" element={<RestaurantRegister />} />
-            <Route path="/restaurant/login" element={<RestaurantLogin />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Home />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+          <Router>
+            <Navbar />
+            <Routes>
+              <Route path="/restaurant/pannel" element={<RestauPannel />} />
+              <Route path="/restaurant/section-speciale" element={<SectionSpecialeEntreprise />} />
+              <Route path="/restaurant/register" element={<RestaurantRegister />} />
+              <Route path="/restaurant/login" element={<RestaurantLogin />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<Home />} />
+            </Routes>
+            <Footer handleLogout={handleLogout} />
+          </Router>
     </div>
   );
 }
+
+export default App;

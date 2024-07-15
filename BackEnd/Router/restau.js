@@ -16,17 +16,16 @@ import {
 const router = Router();
 
 router.post("/login", restaurantLogin);
-router.get("/info/:id", restaurantInfo);
 router.post("/register", restaurantRegister);
-router.route("/:id")
-    .get(restaurantAll)
-    .delete(restaurantDelete)
-    .put(restaurantUpdate);
+router.get("/info/:id", restaurantInfo);
+router.get("/", restaurantAll);
+router.delete("/:id", restaurantDelete);
+router.put("/:id", restaurantUpdate);
 
 router.post("/meal", addMeal);
 router.put("/meal/:id", updateMeal);
 router.delete("/meal/:id", deleteMeal);
+router.get("/meals/restaurant/:restaurantId", getMealsByRestaurant);
 router.get("/meals/:id", getMealsById);
-router.get("/meals/:restaurantId", getMealsByRestaurant);
 
 export default router;

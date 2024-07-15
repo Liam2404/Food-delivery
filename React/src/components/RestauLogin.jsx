@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
-import Navbar from './Navbar';
 
 
 export default function RestaurantLogin({ show, handleClose }) {
@@ -25,7 +23,7 @@ export default function RestaurantLogin({ show, handleClose }) {
 
             if (response.ok) {
                 const data = await response.json();
-                navigate('/');
+                navigate('/restauAdmin');
                 console.log(navigate);
             } else {
                 const data = await response.json();

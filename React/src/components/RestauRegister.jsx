@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
 
 export default function RestaurantRegister() {
   const [name, setName] = useState('');
   const [email_address, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleRegister = async () => {
