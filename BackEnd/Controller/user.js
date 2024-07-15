@@ -68,24 +68,21 @@ const userRegister = async (req, res) => {
     const { username, email_address, password } = req.body;
   
     try {
-      // Vérifier que les champs requis sont présents dans req.body
       if (!username || !email_address || !password) {
         return res.status(400).send('Les champs username, email_address et password sont requis');
       }
   
-      // Hasher le mot de passe
       const hashedPassword = await bcrypt.hash(password, 10);
   
-      // Insérer l'utilisateur dans la base de données
       connection.query(
         'INSERT INTO client (username, email_address, password) VALUES (?, ?, ?)',
         [username, email_address, hashedPassword],
         (error, results) => {
           if (error) {
             console.error('Erreur lors de l\'insertion de l\'utilisateur :', error);
-            return res.status(500).send('Erreur serveur');
+            return res.status(500).send('Erreur serveur', results);
           }
-          res.send('Utilisateur enregistré avec succès');
+          res.send('Utilisateur enregistré avec succès', results);
         }
       );
   
