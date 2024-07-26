@@ -1,25 +1,57 @@
-import connection from "../index.js";
+import connection from '../index.js';
 import bcrypt from 'bcryptjs';
 
+const userRegister = async (req, res) => {
+    const { username, email_address, password } = req.body;
+
+    try {
+        if (!username || !email_address || !password) {
+            return res.status(400).json({ message: 'Les champs username, email_address et password sont requis' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        connection.query(
+            'INSERT INTO client (username, email_address, password) VALUES (?, ?, ?)',
+            [username, email_address, hashedPassword],
+            (error, results) => {
+                if (error) {
+                    console.error('Erreur lors de l\'insertion de l\'utilisateur :', error);
+                    return res.status(500).json({ message: 'Erreur serveur' });
+                }
+                res.status(201).json({ message: 'Utilisateur enregistré avec succès', results });
+            }
+        );
+
+    } catch (error) {
+        console.error('Erreur lors de l\'inscription de l\'utilisateur :', error);
+        res.status(500).json({ message: 'Erreur serveur' });
+    }
+};
 
 const loginUser = async (req, res) => {
-    const { usernameOrEmail, password } = req.body;
-    console.log(req.body);
+    const { email_address, password } = req.body;
+    console.log('Requête de connexion:', req.body);
+
     try {
-        const sql = `SELECT * FROM client WHERE email_address = ?`;
-        db.query(sql, [usernameOrEmail], async (err, results) => {
+        const sql = 'SELECT * FROM client WHERE email_address = ?';
+        connection.query(sql, [email_address], async (err, results) => {
             if (err) {
                 console.error('Erreur lors de la recherche du compte:', err);
                 return res.status(500).send({ message: 'Erreur lors de la connexion au compte' });
             }
-            
+
+            console.log('Résultats de la recherche du compte:', results);
+
             if (results.length === 0) {
                 return res.status(401).send({ message: 'Adresse email incorrecte ou compte inexistant' });
             }
-            
+
             const hashedPassword = results[0].password;
             const passwordMatch = await bcrypt.compare(password, hashedPassword);
-            
+
+            console.log('Vérification du mot de passe:', passwordMatch);
+
             if (!passwordMatch) {
                 return res.status(401).send({ message: 'Mot de passe incorrect' });
             }
@@ -64,34 +96,7 @@ const userDelete = async (req, res) => {
     });
 };
 
-const userRegister = async (req, res) => {
-    const { username, email_address, password } = req.body;
-  
-    try {
-      if (!username || !email_address || !password) {
-        return res.status(400).send('Les champs username, email_address et password sont requis');
-      }
-  
-      const hashedPassword = await bcrypt.hash(password, 10);
-  
-      connection.query(
-        'INSERT INTO client (username, email_address, password) VALUES (?, ?, ?)',
-        [username, email_address, hashedPassword],
-        (error, results) => {
-          if (error) {
-            console.error('Erreur lors de l\'insertion de l\'utilisateur :', error);
-            return res.status(500).send('Erreur serveur', results);
-          }
-          res.send('Utilisateur enregistré avec succès', results);
-        }
-      );
-  
-    } catch (error) {
-      console.error('Erreur lors de l\'inscription de l\'utilisateur :', error);
-      res.status(500).send('Erreur serveur');
-    }
-  };
-  
+
 
 const userInfo = async (req, res) => {
     const { username, password } = req.body;
@@ -152,6 +157,7 @@ const userLogout = async (req, res) => {
     });
 };
 
+
 export {
     loginUser,
     userUpdate,
@@ -160,5 +166,5 @@ export {
     userInfo,
     getUserbyId,
     getAllUsers,
-    userLogout
+    userLogout,
 };

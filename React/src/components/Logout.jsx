@@ -1,10 +1,8 @@
 import React, { useContext } from 'react';
 import Navbar from './Navbar';
 import 'bootstrap/dist/css/bootstrap.css';
-import { UserContext } from '../contexts/UserContext';
 
 export default function Logout() {
-  const { user, setUser } = useContext(UserContext);
   const handleLogout = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/user/logout', {

@@ -6,8 +6,13 @@ const router = Router();
 router.post('/login',loginUser)
 router.route('/:id').put(userUpdate).delete(userDelete).get(getUserbyId)
 router.post('/register',userRegister)
-router.post('/', userInfo)
+router.get('/info', userInfo)
 router.get('/all', getAllUsers)
 router.post('/logout', userLogout)
+
+
+
+
+
 
 export default router;

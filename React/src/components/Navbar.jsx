@@ -1,42 +1,150 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import logo from '../assets/logo.png';
 
-function Navbar({ handleLogin, setUsername, setPassword, username, password, error }) {
+function Navbar() {
+  // States for login modal
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [emailLogin, setEmailLogin] = useState('');
+  const [passwordLogin, setPasswordLogin] = useState('');
+  const [errorLogin, setErrorLogin] = useState('');
+
+  // States for register modal
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [email, setEmail] = useState('');
-  const [confirmEmail, setConfirmEmail] = useState('');
+  const [emailRegister, setEmailRegister] = useState('');
+  const [confirmEmailRegister, setConfirmEmailRegister] = useState('');
+  const [usernameRegister, setUsernameRegister] = useState('');
+  const [passwordRegister, setPasswordRegister] = useState('');
+  const [errorRegister, setErrorRegister] = useState('');
+
+
+  // State for user info
+  const [user, setUser] = useState(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch user info on component mount
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/user/info', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des informations utilisateur:', error);
+        setUser(null);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleLoginClose = () => setShowLoginModal(false);
   const handleLoginShow = () => setShowLoginModal(true);
 
   const handleRegisterClose = () => {
     setShowRegisterModal(false);
-    setEmail('');
-    setConfirmEmail('');
+    setEmailRegister('');
+    setConfirmEmailRegister('');
+    setUsernameRegister('');
+    setPasswordRegister('');
   };
-
   const handleRegisterShow = () => {
     setShowLoginModal(false);
     setShowRegisterModal(true);
   };
 
-  const handleRegister = () => {
-    if (email.trim() === '') {
-      setError('Veuillez entrer une adresse email.');
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/user/login', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email_address: emailLogin, password: passwordLogin }),
+        credentials: 'include', // Include cookies for the session
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setEmailLogin('');
+        setPasswordLogin('');
+        setErrorLogin('');
+        // Refresh user info after login
+        navigate('/'); 
+      } else {
+        const data = await response.json();
+        setErrorLogin(data.message);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la connexion :', error);
+      setErrorLogin('Erreur lors de la connexion');
+    }
+  };
+
+  const handleRegister = async () => {
+    if (emailRegister.trim() === '') {
+      setErrorRegister('Veuillez entrer une adresse email.');
       return;
     }
-    if (email !== confirmEmail) {
-      setError('Les adresses email ne correspondent pas.');
+    if (emailRegister !== confirmEmailRegister) {
+      setErrorRegister('Les adresses email ne correspondent pas.');
       return;
     }
-    // Handle registration logic here
-    alert('Inscription soumise');
-    handleRegisterClose();
+
+    try {
+      const response = await fetch('http://localhost:3000/api/user/register', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: usernameRegister, email_address: emailRegister, password: passwordRegister }),
+        credentials: 'include', // Include cookies for the session
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setEmailRegister('');
+        setConfirmEmailRegister('');
+        setUsernameRegister('');
+        setPasswordRegister('');
+        setErrorRegister('');
+        handleRegisterClose(); // Close modal on success
+      } else {
+        const data = await response.json();
+        setErrorRegister(data.message);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la création du compte :', error);
+      setErrorRegister('Erreur lors de la création du compte');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/user/logout', {
+        method: 'POST',
+        credentials: 'include', // Include cookies for the session
+      });
+      if (response.ok) {
+        setUser(null);
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion :', error);
+    }
   };
 
   return (
@@ -48,15 +156,26 @@ function Navbar({ handleLogin, setUsername, setPassword, username, password, err
       </Link>
 
       <div className="ml-auto container d-flex justify-content-between">
-        <Button variant="primary" onClick={handleLoginShow}>
-          Connexion Client
-        </Button>
+        {user ? (
+          <div>
+            <span>Bonjour, {user.username}</span>
+            <Button variant="primary" onClick={handleLogout} className="ml-2">
+              Déconnexion
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Button variant="primary" onClick={handleLoginShow}>
+              Connexion Client
+            </Button>
 
-        <Link to="/restaurant/section-speciale">
-          <Button variant="dark" className="ml-2">
-            Section Spéciale Entreprise
-          </Button>
-        </Link>
+            <Link to="/restaurant/section-speciale">
+              <Button variant="dark" className="ml-2">
+                Section Spéciale Entreprise
+              </Button>
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Modal de Connexion */}
@@ -66,27 +185,27 @@ function Navbar({ handleLogin, setUsername, setPassword, username, password, err
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formUsername">
-              <Form.Label>Nom d'utilisateur ou email</Form.Label>
+            <Form.Group controlId="formEmailLogin">
+              <Form.Label>Email</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Entrez votre nom d'utilisateur ou email"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                autoComplete="username"
+                type="email"
+                placeholder="Entrez votre email"
+                value={emailLogin}
+                onChange={(e) => setEmailLogin(e.target.value)}
+                autoComplete="email"
               />
             </Form.Group>
-            <Form.Group controlId="formPassword">
+            <Form.Group controlId="formPasswordLogin">
               <Form.Label>Mot de passe</Form.Label>
               <Form.Control
                 type="password"
                 placeholder="Entrez votre mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={passwordLogin}
+                onChange={(e) => setPasswordLogin(e.target.value)}
                 autoComplete="current-password"
               />
             </Form.Group>
-            {error && <p className="text-danger">{error}</p>}
+            {errorLogin && <p className="text-danger">{errorLogin}</p>}
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -109,43 +228,47 @@ function Navbar({ handleLogin, setUsername, setPassword, username, password, err
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formEmail">
+            <Form.Group controlId="formEmailRegister">
               <Form.Label>Adresse email</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="Entrez votre adresse email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={emailRegister}
+                onChange={(e) => setEmailRegister(e.target.value)}
                 autoComplete="email"
               />
             </Form.Group>
-            <Form.Group controlId="formConfirmEmail">
-              <Form.Label>Confirmer adresse email</Form.Label>
+            <Form.Group controlId="formConfirmEmailRegister">
+              <Form.Label>Confirmer l'adresse email</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="Confirmez votre adresse email"
-                value={confirmEmail}
-                onChange={(e) => setConfirmEmail(e.target.value)}
+                value={confirmEmailRegister}
+                onChange={(e) => setConfirmEmailRegister(e.target.value)}
                 autoComplete="email"
               />
             </Form.Group>
-            <Form.Group controlId="formUsername">
+            <Form.Group controlId="formUsernameRegister">
               <Form.Label>Nom d'utilisateur</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Entrez votre nom d'utilisateur"
+                value={usernameRegister}
+                onChange={(e) => setUsernameRegister(e.target.value)}
                 autoComplete="username"
               />
             </Form.Group>
-            <Form.Group controlId="formPassword">
+            <Form.Group controlId="formPasswordRegister">
               <Form.Label>Mot de passe</Form.Label>
               <Form.Control
                 type="password"
                 placeholder="Entrez votre mot de passe"
+                value={passwordRegister}
+                onChange={(e) => setPasswordRegister(e.target.value)}
                 autoComplete="new-password"
               />
             </Form.Group>
-            {error && <p className="text-danger">{error}</p>}
+            {errorRegister && <p className="text-danger">{errorRegister}</p>}
           </Form>
         </Modal.Body>
         <Modal.Footer>

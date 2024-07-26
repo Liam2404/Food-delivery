@@ -10,12 +10,22 @@ import restauRouter from './Router/restau.js';
 const app = express();
 const port = 3000;
 
+// Liste des origines autorisées (ajoutez vos origines ici)
+const allowedOrigins = ['http://localhost:5173'];
+
 // Middleware pour configurer CORS
 app.use(cors({
-    origin: '*',
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            // Autorise les requêtes venant de l'origine spécifiée ou les requêtes sans origine (par exemple, depuis Postman)
+            callback(null, true);
+        } else {
+            callback(new Error('CORS non autorisé par origine'));
+        }
+    },
     credentials: true, // Autoriser les cookies avec CORS
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    allowedHeaders: "*"
+    allowedHeaders: "Content-Type, Authorization, JSON" // Ajoutez les en-têtes autorisés
 }));
 
 // Middleware pour parser les cookies
@@ -31,7 +41,6 @@ app.use(session({
 
 // Configuration de la connexion à la base de données avec pool de connexions
 export const db = mysql.createPool({
-    connectionLimit: 10, // Limite de connexions simultanées
     host: 'localhost',
     user: 'root',
     password: '',
@@ -56,6 +65,8 @@ app.use('/api/user', userRouter);
 
 // Routes pour les restaurants
 app.use('/api/restaurant', restauRouter);
+
+
 
 // Écoute du serveur sur le port spécifié
 app.listen(port, () => {
