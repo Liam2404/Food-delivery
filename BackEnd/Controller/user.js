@@ -99,23 +99,42 @@ const userDelete = async (req, res) => {
 
 
 const userInfo = async (req, res) => {
-    const { username, password } = req.body;
-    console.log(req.body);
-    connection.query('SELECT * FROM client WHERE username = ? AND password = ?', [username, password], (error, results) => {
+    const { username, password } = req.query;
+    console.log('Requête reçue:', req.query);
+
+    // Vérifiez si les champs username et password sont présents
+    if (!username || !password) {
+        res.status(400).send('Nom d\'utilisateur et mot de passe sont requis');
+        return;
+    }
+
+    // Loggez les valeurs reçues pour le débogage
+    console.log('Nom d\'utilisateur:', username);
+    console.log('Mot de passe:', password);
+
+    connection.query('SELECT * FROM client WHERE username = ?', [username], async (error, results) => {
         if (error) {
-            console.error('Erreur lors de la connexion de l\'utilisateur :', error);
+            console.error('Erreur lors de la recherche de l\'utilisateur :', error);
             res.status(500).send('Erreur serveur');
         } else {
             if (results.length > 0) {
-                // Utilisateur trouvé, créer une session
-                req.session.user = results[0];
-                res.send(req.session.user);
+                const hashedPassword = results[0].password;
+                const passwordMatch = await bcrypt.compare(password, hashedPassword);
+
+                if (passwordMatch) {
+                    // Utilisateur trouvé, renvoyer le nom d'utilisateur
+                    res.send(`Utilisateur connecté : ${results[0].username}`);
+                } else {
+                    res.status(401).send('Nom d\'utilisateur ou mot de passe incorrect');
+                }
             } else {
                 res.status(401).send('Nom d\'utilisateur ou mot de passe incorrect');
             }
         }
     });
 };
+
+
 
 const getUserbyId = async (req, res) => {
     const clientId = req.params.id;
