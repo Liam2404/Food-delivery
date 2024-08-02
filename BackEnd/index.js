@@ -6,9 +6,18 @@ import mysql from 'mysql';
 import userRouter from './Router/user.js';
 import stripeRouter from './Router/stripe.js';
 import restauRouter from './Router/restau.js';
+import path from 'path';
+import { fileURLToPath } from 'url'; // Importez fileURLToPath pour obtenir le répertoire courant
 
 const app = express();
 const port = 3000;
+
+// Obtenez le répertoire courant
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Middleware pour servir les fichiers statiques depuis le répertoire 'uploads'
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Liste des origines autorisées
 const allowedOrigins = ['http://localhost:5173'];
@@ -17,15 +26,14 @@ const allowedOrigins = ['http://localhost:5173'];
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            // Autorise les requêtes venant de l'origine spécifiée ou les requêtes sans origine (par exemple, depuis Postman)
             callback(null, true);
         } else {
             callback(new Error('CORS non autorisé par origine'));
         }
     },
-    credentials: true, // Autoriser les cookies avec CORS
+    credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    allowedHeaders: "Content-Type, Authorization, JSON" // Ajoutez les en-têtes autorisés
+    allowedHeaders: "Content-Type, Authorization, JSON"
 }));
 
 // Middleware pour parser les cookies
@@ -38,13 +46,11 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         secure: false, // Modifiez en `true` en production avec HTTPS
-        httpOnly: true, // Empêche l'accès via JavaScript
+        httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // Durée de vie du cookie 24h
         sameSite: 'lax',
     },
 }));
-
-
 
 // Configuration de la connexion à la base de données avec pool de connexions
 export const db = mysql.createPool({
@@ -72,8 +78,6 @@ app.use('/api/user', userRouter);
 
 // Routes pour les restaurants
 app.use('/api/restaurant', restauRouter);
-
-
 
 // Écoute du serveur sur le port spécifié
 app.listen(port, () => {

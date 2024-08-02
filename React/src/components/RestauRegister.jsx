@@ -22,8 +22,8 @@ export default function RestaurantRegister() {
 
       if (response.ok) {
         const data = await response.json();
-        register(data);
-        navigate('/restauAdmin');
+        // Redirection vers la page d'administration du restaurant
+        navigate('/restaurant/pannel');
       } else {
         const data = await response.json();
         setError(data.message);
@@ -48,7 +48,7 @@ export default function RestaurantRegister() {
         />
       </div>
       <div className="form-group">
-        <label htmlFor="restaurant-email_address">Email</label>
+        <label htmlFor="restaurant-email">Email</label>
         <input
           type="email"
           className="form-control"
@@ -74,17 +74,14 @@ export default function RestaurantRegister() {
   );
 
   return (
-    <>
-    
-        <div className="d-flex justify-content-center align-items-center vh-100">
-          <form style={{ width: '300px' }}>
-            <h2 className="text-center">Inscription Restaurant</h2>
-            {registerForm}
-            <Button variant="primary" onClick={handleRegister} className="mt-3 w-100">
-              S'inscrire
-            </Button>
-          </form>
-        </div>
-    </>
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <form style={{ width: '300px' }}>
+        <h2 className="text-center">Inscription Restaurant</h2>
+        {registerForm}
+        <Button variant="primary" onClick={handleRegister} className="mt-3 w-100">
+          S'inscrire
+        </Button>
+      </form>
+    </div>
   );
 }

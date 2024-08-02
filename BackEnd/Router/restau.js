@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import upload from '../upload.js';
 import {
     restaurantLogin,
     restaurantAll,
@@ -22,8 +23,8 @@ router.get("/", restaurantAll);
 router.delete("/:id", restaurantDelete);
 router.put("/:id", restaurantUpdate);
 
-router.post("/meal", addMeal);
-router.put("/meal/:id", updateMeal);
+router.post("/meal", upload.single('meal_img'), addMeal);
+router.put("/meal/:id", upload.single('meal_img'), updateMeal);
 router.delete("/meal/:id", deleteMeal);
 router.get("/meals/restaurant/:restaurantId", getMealsByRestaurant);
 router.get("/meals/:id", getMealsById);

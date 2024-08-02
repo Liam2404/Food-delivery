@@ -10,7 +10,6 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.scss';
 
-
 function App() {
   const [isRestaurant, setIsRestaurant] = useState(false);
   const [isAdmin, setIsAdministrator] = useState(false);
@@ -43,7 +42,7 @@ function App() {
           />
           <Route path="/restaurant/section-speciale" element={<SectionSpecialeEntreprise />} />
           <Route path="/restaurant/register" element={<RestaurantRegister />} />
-          <Route path="/restaurant/login" element={<RestaurantLogin />} />
+          <Route path="/restaurant/login" element={<RestaurantLogin setIsRestaurant={setIsRestaurant} />} />
           <Route path="/" element={<Home />} />
         </Routes>
       </Router>

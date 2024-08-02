@@ -19,7 +19,7 @@ const RestauPanel = () => {
 
   const fetchMeals = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/restaurant/meals/:id');
+      const response = await axios.get('http://localhost:3000/api/restaurant/meals/restaurant/:id');
       setMeals(response.data);
     } catch (error) {
       setError(error.message);
@@ -42,7 +42,12 @@ const RestauPanel = () => {
     }
 
     try {
-      await axios.post('http://localhost:3000/api/restaurant/meal', formData);
+      await axios.post('http://localhost:3000/api/restaurant/meal', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       fetchMeals();
       setNewMeal({
         meal_name: '',
@@ -57,7 +62,7 @@ const RestauPanel = () => {
 
   const handleDeleteMeal = async (mealId) => {
     try {
-      await axios.delete(`http://localhost:3000/api/restaurant/meal/:id${mealId}`);
+      await axios.delete(`http://localhost:3000/api/restaurant/meal/${mealId}`);
       fetchMeals();
     } catch (error) {
       setError(error.message);
@@ -68,7 +73,7 @@ const RestauPanel = () => {
     <div>
       <h1>Restaurant Admin Panel</h1>
       {error && <p className="text-danger">{error}</p>}
-      
+
       <div>
         <h2>Add New Meal</h2>
         <input
@@ -99,7 +104,7 @@ const RestauPanel = () => {
         />
         <button onClick={handleAddMeal}>Add Meal</button>
       </div>
-      
+
       <div>
         <h2>Meals</h2>
         <ul>
@@ -108,7 +113,7 @@ const RestauPanel = () => {
               <p>{meal.meal_name}</p>
               <p>{meal.meal_description}</p>
               <p>{meal.meal_price}</p>
-              <img src={URL.createObjectURL(new Blob([meal.meal_img]))} alt={meal.meal_name} />
+              {meal.meal_img && <img src={`http://localhost:3000/${meal.meal_img}`} alt={meal.meal_name} />}
               <button onClick={() => handleDeleteMeal(meal.meal_id)}>Delete</button>
             </li>
           ))}

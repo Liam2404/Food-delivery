@@ -65,7 +65,7 @@ const RestaurantMenu = ({ restaurant, handleCloseMenuSidebar }) => {
         <Button
           variant="primary"
           onClick={() => {
-            const userId = user.id; // Assurez-vous que user est défini
+            const userId = user.id;
             const url = `https://buy.stripe.com/test_7sI16We6Ah0LfDi3cc?client_reference_id=${userId}`;
             window.location.href = url;
           }}
