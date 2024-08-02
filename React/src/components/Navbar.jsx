@@ -6,46 +6,39 @@ import Form from 'react-bootstrap/Form';
 import logo from '../assets/logo.png';
 
 function Navbar() {
-  // States for login modal
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [emailLogin, setEmailLogin] = useState('');
   const [passwordLogin, setPasswordLogin] = useState('');
   const [errorLogin, setErrorLogin] = useState('');
-
-  // States for register modal
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [emailRegister, setEmailRegister] = useState('');
   const [confirmEmailRegister, setConfirmEmailRegister] = useState('');
   const [usernameRegister, setUsernameRegister] = useState('');
   const [passwordRegister, setPasswordRegister] = useState('');
   const [errorRegister, setErrorRegister] = useState('');
-
-
-  // State for user info
   const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Fetch user info on component mount
-    const fetchUser = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/api/user/info', {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error('Erreur lors de la récupération des informations utilisateur:', error);
+  const fetchUser = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/user/session', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data);
+      } else {
         setUser(null);
       }
-    };
+    } catch (error) {
+      console.error('Erreur lors de la récupération des informations utilisateur:', error);
+      setUser(null);
+    }
+  };
 
+  useEffect(() => {
     fetchUser();
   }, []);
 
@@ -73,7 +66,7 @@ function Navbar() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email_address: emailLogin, password: passwordLogin }),
-        credentials: 'include', // Include cookies for the session
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -81,8 +74,8 @@ function Navbar() {
         setEmailLogin('');
         setPasswordLogin('');
         setErrorLogin('');
-        // Refresh user info after login
-        navigate('/'); 
+        fetchUser(); // Fetch user data after successful login
+        handleLoginClose(); // Close the login modal
       } else {
         const data = await response.json();
         setErrorLogin(data.message);
@@ -111,7 +104,7 @@ function Navbar() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username: usernameRegister, email_address: emailRegister, password: passwordRegister }),
-        credentials: 'include', // Include cookies for the session
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -121,7 +114,7 @@ function Navbar() {
         setUsernameRegister('');
         setPasswordRegister('');
         setErrorRegister('');
-        handleRegisterClose(); // Close modal on success
+        handleRegisterClose();
       } else {
         const data = await response.json();
         setErrorRegister(data.message);
@@ -136,7 +129,7 @@ function Navbar() {
     try {
       const response = await fetch('http://localhost:3000/api/user/logout', {
         method: 'POST',
-        credentials: 'include', // Include cookies for the session
+        credentials: 'include',
       });
       if (response.ok) {
         setUser(null);
@@ -178,7 +171,6 @@ function Navbar() {
         )}
       </div>
 
-      {/* Modal de Connexion */}
       <Modal show={showLoginModal} onHide={handleLoginClose}>
         <Modal.Header closeButton>
           <Modal.Title>Connexion Client</Modal.Title>
@@ -189,7 +181,6 @@ function Navbar() {
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
-                placeholder="Entrez votre email"
                 value={emailLogin}
                 onChange={(e) => setEmailLogin(e.target.value)}
                 autoComplete="email"
@@ -199,7 +190,6 @@ function Navbar() {
               <Form.Label>Mot de passe</Form.Label>
               <Form.Control
                 type="password"
-                placeholder="Entrez votre mot de passe"
                 value={passwordLogin}
                 onChange={(e) => setPasswordLogin(e.target.value)}
                 autoComplete="current-password"
@@ -221,7 +211,6 @@ function Navbar() {
         </Modal.Footer>
       </Modal>
 
-      {/* Modal d'Inscription */}
       <Modal show={showRegisterModal} onHide={handleRegisterClose}>
         <Modal.Header closeButton>
           <Modal.Title>Inscription Client</Modal.Title>
@@ -232,7 +221,6 @@ function Navbar() {
               <Form.Label>Adresse email</Form.Label>
               <Form.Control
                 type="email"
-                placeholder="Entrez votre adresse email"
                 value={emailRegister}
                 onChange={(e) => setEmailRegister(e.target.value)}
                 autoComplete="email"
@@ -242,7 +230,6 @@ function Navbar() {
               <Form.Label>Confirmer l'adresse email</Form.Label>
               <Form.Control
                 type="email"
-                placeholder="Confirmez votre adresse email"
                 value={confirmEmailRegister}
                 onChange={(e) => setConfirmEmailRegister(e.target.value)}
                 autoComplete="email"
@@ -252,7 +239,6 @@ function Navbar() {
               <Form.Label>Nom d'utilisateur</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Entrez votre nom d'utilisateur"
                 value={usernameRegister}
                 onChange={(e) => setUsernameRegister(e.target.value)}
                 autoComplete="username"
@@ -262,7 +248,6 @@ function Navbar() {
               <Form.Label>Mot de passe</Form.Label>
               <Form.Control
                 type="password"
-                placeholder="Entrez votre mot de passe"
                 value={passwordRegister}
                 onChange={(e) => setPasswordRegister(e.target.value)}
                 autoComplete="new-password"
