@@ -6,7 +6,6 @@ import RestaurantRegister from './components/RestauRegister';
 import Home from './pages/Home';
 import Navbar from './components/Navbar';
 import RestauPannel from './components/RestauPannel';
-import Footer from './components/Footer';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.scss';
@@ -47,7 +46,6 @@ function App() {
           <Route path="/restaurant/login" element={<RestaurantLogin />} />
           <Route path="/" element={<Home />} />
         </Routes>
-        <Footer handleLogout={handleLogout} />
       </Router>
     </div>
   );

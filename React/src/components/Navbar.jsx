@@ -20,42 +20,11 @@ function Navbar() {
 
   const navigate = useNavigate();
 
-  const fetchUser = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/api/user/session', {
-        method: 'GET',
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data);
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Erreur lors de la récupération des informations utilisateur:', error);
-      setUser(null);
-    }
-  };
-
   useEffect(() => {
+    // Optionnel: Vous pouvez vérifier la session utilisateur au chargement de la page
     fetchUser();
   }, []);
 
-  const handleLoginClose = () => setShowLoginModal(false);
-  const handleLoginShow = () => setShowLoginModal(true);
-
-  const handleRegisterClose = () => {
-    setShowRegisterModal(false);
-    setEmailRegister('');
-    setConfirmEmailRegister('');
-    setUsernameRegister('');
-    setPasswordRegister('');
-  };
-  const handleRegisterShow = () => {
-    setShowLoginModal(false);
-    setShowRegisterModal(true);
-  };
 
   const handleLogin = async () => {
     try {
@@ -74,8 +43,8 @@ function Navbar() {
         setEmailLogin('');
         setPasswordLogin('');
         setErrorLogin('');
-        fetchUser(); // Fetch user data after successful login
-        handleLoginClose(); // Close the login modal
+        setUser(data); // Mettre à jour l'état utilisateur après la connexion
+        handleLoginClose(); // Fermer le modal de connexion
       } else {
         const data = await response.json();
         setErrorLogin(data.message);
@@ -125,6 +94,42 @@ function Navbar() {
     }
   };
 
+const fetchUser = async () => {
+    try {
+        const response = await fetch('http://localhost:3000/api/user/session', {
+            method: 'GET',
+            credentials: 'include',
+        });
+        if (response.ok) {
+            const data = await response.json();
+            setUser(data);
+        } else {
+            console.error('Réponse non OK lors de la récupération de l\'utilisateur:', response.status);
+            setUser(null);
+        }
+    } catch (error) {
+        console.error('Erreur lors de la récupération des informations utilisateur:', error);
+        setUser(null);
+    }
+};
+
+
+  const handleLoginClose = () => setShowLoginModal(false);
+  const handleLoginShow = () => setShowLoginModal(true);
+
+  const handleRegisterClose = () => {
+    setShowRegisterModal(false);
+    setEmailRegister('');
+    setConfirmEmailRegister('');
+    setUsernameRegister('');
+    setPasswordRegister('');
+  };
+  const handleRegisterShow = () => {
+    setShowLoginModal(false);
+    setShowRegisterModal(true);
+  };
+
+
   const handleLogout = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/user/logout', {
@@ -148,28 +153,29 @@ function Navbar() {
         Accueil
       </Link>
 
-      <div className="ml-auto container d-flex justify-content-between">
-        {user ? (
-          <div>
-            <span>Bonjour, {user.username}</span>
-            <Button variant="primary" onClick={handleLogout} className="ml-2">
-              Déconnexion
+      <div className="ml-auto container d-flex align-items-center">
+    {user ? (
+        <div className="d-flex align-items-center">
+            <span className="mr-3">Bonjour, {user.username}</span>
+            <Button variant="primary" onClick={handleLogout}>
+                Déconnexion
             </Button>
-          </div>
-        ) : (
-          <>
+        </div>
+    ) : (
+        <>
             <Button variant="primary" onClick={handleLoginShow}>
-              Connexion Client
+                Connexion Client
             </Button>
-
             <Link to="/restaurant/section-speciale">
-              <Button variant="dark" className="ml-2">
-                Section Spéciale Entreprise
-              </Button>
+                <Button variant="dark" className="ml-2">
+                    Section Spéciale Entreprise
+                </Button>
             </Link>
-          </>
-        )}
-      </div>
+        </>
+    )}
+</div>
+
+
 
       <Modal show={showLoginModal} onHide={handleLoginClose}>
         <Modal.Header closeButton>
@@ -181,6 +187,7 @@ function Navbar() {
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
+                placeholder="Entrez votre email"
                 value={emailLogin}
                 onChange={(e) => setEmailLogin(e.target.value)}
                 autoComplete="email"
@@ -190,6 +197,7 @@ function Navbar() {
               <Form.Label>Mot de passe</Form.Label>
               <Form.Control
                 type="password"
+                placeholder="Entrez votre mot de passe"
                 value={passwordLogin}
                 onChange={(e) => setPasswordLogin(e.target.value)}
                 autoComplete="current-password"
@@ -221,6 +229,7 @@ function Navbar() {
               <Form.Label>Adresse email</Form.Label>
               <Form.Control
                 type="email"
+                placeholder="Entrez votre adresse email"
                 value={emailRegister}
                 onChange={(e) => setEmailRegister(e.target.value)}
                 autoComplete="email"
@@ -230,6 +239,7 @@ function Navbar() {
               <Form.Label>Confirmer l'adresse email</Form.Label>
               <Form.Control
                 type="email"
+                placeholder="Confirmez votre adresse email"
                 value={confirmEmailRegister}
                 onChange={(e) => setConfirmEmailRegister(e.target.value)}
                 autoComplete="email"
@@ -239,6 +249,7 @@ function Navbar() {
               <Form.Label>Nom d'utilisateur</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Entrez votre nom d'utilisateur"
                 value={usernameRegister}
                 onChange={(e) => setUsernameRegister(e.target.value)}
                 autoComplete="username"
@@ -248,6 +259,7 @@ function Navbar() {
               <Form.Label>Mot de passe</Form.Label>
               <Form.Control
                 type="password"
+                placeholder="Entrez votre mot de passe"
                 value={passwordRegister}
                 onChange={(e) => setPasswordRegister(e.target.value)}
                 autoComplete="new-password"

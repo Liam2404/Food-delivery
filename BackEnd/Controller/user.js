@@ -41,8 +41,6 @@ const loginUser = async (req, res) => {
                 return res.status(500).send({ message: 'Erreur lors de la connexion au compte' });
             }
 
-            console.log('Résultats de la recherche du compte:', results);
-
             if (results.length === 0) {
                 return res.status(401).send({ message: 'Adresse email incorrecte ou compte inexistant' });
             }
@@ -50,26 +48,27 @@ const loginUser = async (req, res) => {
             const hashedPassword = results[0].password;
             const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
-            console.log('Vérification du mot de passe:', passwordMatch);
-
             if (!passwordMatch) {
                 return res.status(401).send({ message: 'Mot de passe incorrect' });
             }
 
-            // Si l'authentification réussit, enregistrer l'utilisateur dans la session
             req.session.user = {
                 id: results[0].id,
                 username: results[0].username,
                 email_address: results[0].email_address
             };
 
-            res.status(200).json({ id: results[0].id, username: results[0].username, email_address: results[0].email_address });
+            console.log('Session après connexion:', req.session);
+
+            res.status(200).json(req.session.user);
         });
     } catch (error) {
         console.error('Erreur lors de la connexion au compte:', error);
         res.status(500).send({ message: 'Erreur lors de la connexion au compte' });
     }
 };
+
+
 
 const userUpdate = async (req, res) => {
     const clientId = req.params.id;
@@ -163,13 +162,17 @@ const getAllUsers = async (req, res) => {
     });
 };
 
-const userSession = async (req, res) =>{
+const userSession = async (req, res) => {
+    console.log('Session ID:', req.sessionID); // Vérifiez l'ID de session
+    console.log('Session Data:', req.session); // Vérifiez les données de la session
+
     if (req.session.user) {
         res.status(200).json(req.session.user);
     } else {
         res.status(401).json({ message: 'Utilisateur non connecté' });
     }
 };
+
 
 const userLogout = async (req, res) => {
     req.session.destroy((err) => {

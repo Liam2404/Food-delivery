@@ -10,7 +10,7 @@ import restauRouter from './Router/restau.js';
 const app = express();
 const port = 3000;
 
-// Liste des origines autorisées (ajoutez vos origines ici)
+// Liste des origines autorisées
 const allowedOrigins = ['http://localhost:5173'];
 
 // Middleware pour configurer CORS
@@ -33,11 +33,18 @@ app.use(cookieParser());
 
 // Middleware pour gérer les sessions
 app.use(session({
-    secret: 'secret', // Changez ceci pour un secret plus sécurisé
+    secret: 'your-secret-key',
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }, // Modifiez pour 'secure: true' en production avec HTTPS
+    saveUninitialized: false,
+    cookie: {
+        secure: false, // Modifiez en `true` en production avec HTTPS
+        httpOnly: true, // Empêche l'accès via JavaScript
+        maxAge: 24 * 60 * 60 * 1000, // Durée de vie du cookie 24h
+        sameSite: 'lax',
+    },
 }));
+
+
 
 // Configuration de la connexion à la base de données avec pool de connexions
 export const db = mysql.createPool({
