@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
-export default function RestaurantLogin({ setIsRestaurant }) {
+export default function RestaurantLogin() {
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,20 +24,20 @@ export default function RestaurantLogin({ setIsRestaurant }) {
         },
         body: JSON.stringify({ usernameOrEmail, password }),
       });
-
+    
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('user', JSON.stringify({ ...data, isRestaurant: true }));
-        setIsRestaurant(true);
         navigate('/restaurant/pannel');
       } else {
         const data = await response.json();
-        setError(data.message);
+        setError(data.message || 'Identifiants incorrects');
       }
     } catch (error) {
       console.error('Erreur lors de la connexion :', error);
-      setError('Erreur lors de la connexion');
+      setError('Erreur de connexion, veuillez réessayer plus tard.');
     }
+    
   };
 
   return (
@@ -77,6 +76,3 @@ export default function RestaurantLogin({ setIsRestaurant }) {
   );
 }
 
-RestaurantLogin.propTypes = {
-  setIsRestaurant: PropTypes.func.isRequired,
-};

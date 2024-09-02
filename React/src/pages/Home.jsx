@@ -1,55 +1,37 @@
-import React, { useState } from 'react';
-import Navbar from '../components/Navbar';
+import React, { useState, useEffect } from 'react';
 import RestaurantMenu from '../components/RestaurantMenu';
 
-const restaurants = [
-  {
-    id: 1,
-    name: "Restaurant A",
-    cuisine: "Cuisine A",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vestibulum blandit augue, in ultricies nisl ullamcorper sed.",
-    image: "https://via.placeholder.com/150",
-    rating: 4.5,
-    deliveryTime: "30-45 min",
-    menu: [
-      { id: 1, name: "Plat A1", price: 10.99 },
-      { id: 2, name: "Plat A2", price: 12.99 },
-      { id: 3, name: "Plat A3", price: 8.99 }
-    ]
-  },
-  {
-    id: 2,
-    name: "Restaurant B",
-    cuisine: "Cuisine B",
-    description: "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
-    image: "https://via.placeholder.com/150",
-    rating: 4.0,
-    deliveryTime: "25-40 min",
-    menu: [
-      { id: 4, name: "Plat B1", price: 9.99 },
-      { id: 5, name: "Plat B2", price: 11.99 },
-      { id: 6, name: "Plat B3", price: 7.99 }
-    ]
-  },
-  {
-    id: 3,
-    name: "Restaurant C",
-    cuisine: "Cuisine C",
-    description: "Fusce lobortis augue sit amet justo pellentesque, vel egestas libero vehicula.",
-    image: "https://via.placeholder.com/150",
-    rating: 4.8,
-    deliveryTime: "20-35 min",
-    menu: [
-      { id: 7, name: "Plat C1", price: 11.50 },
-      { id: 8, name: "Plat C2", price: 13.50 },
-      { id: 9, name: "Plat C3", price: 10.00 }
-    ]
-  }
-];
-
 export default function HomePage() {
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null); // Restaurant sélectionné
-  const [showMenuSidebar, setShowMenuSidebar] = useState(false); // État du menu latéral
+  const [restaurants, setRestaurants] = useState([]);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [showMenuSidebar, setShowMenuSidebar] = useState(false);
+
+  // Fonction pour récupérer les restaurants
+  const fetchRestaurants = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/restaurant', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des restaurants');
+      }
+
+      const data = await response.json();
+      setRestaurants(data); // Mettre à jour l'état avec les données récupérées
+    } catch (error) {
+      console.error('Erreur lors de la récupération des restaurants :', error);
+    }
+  };
+
+  // Utiliser useEffect pour appeler la fonction fetchRestaurants au chargement du composant
+  useEffect(() => {
+    fetchRestaurants();
+  }, []);
 
   // Fonction pour afficher le menu latéral
   const handleShowMenuSidebar = (restaurant) => {
