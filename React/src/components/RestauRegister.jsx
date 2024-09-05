@@ -6,18 +6,27 @@ export default function RestaurantRegister() {
   const [name, setName] = useState('');
   const [email_address, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [image, setImage] = useState(null);  // Stocker l'image sélectionnée
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleRegister = async () => {
     try {
+      // FormData pour envoyer les données sous forme de multipart
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email_address', email_address);
+      formData.append('password', password);
+      if (image) {
+        formData.append('image', image);  // Ajouter l'image au FormData
+      }
+
       const response = await fetch('http://localhost:3000/api/restaurant/register', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email_address, password }),
+        body: formData,  // Envoyer les données sous forme de multipart/form-data
       });
 
       if (response.ok) {
@@ -67,6 +76,15 @@ export default function RestaurantRegister() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="restaurant-image">Image du restaurant</label>
+        <input
+          type="file"
+          className="form-control"
+          id="restaurant-image"
+          onChange={(e) => setImage(e.target.files[0])}  // Stocker le fichier image
         />
       </div>
       {error && <p className="text-danger">{error}</p>}

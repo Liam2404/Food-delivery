@@ -1,5 +1,24 @@
 import { db } from "../index.js";
 import bcrypt from 'bcryptjs';
+import upload from '../middlewares/multer.js';
+
+
+const getAllRestaurants = (req, res) => {
+    const query = 'SELECT id, name, description, cuisine, rating, deliveryTime, restaurant_img FROM restaurant';
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('Erreur lors de la récupération des restaurants:', err);
+        return res.status(500).send({ message: 'Erreur lors de la récupération des restaurants' });
+      }
+  
+      const restaurants = results.map(restaurant => ({
+        ...restaurant,
+        image: `http://localhost:3000/uploads/${restaurant.restaurant_img}`  // Chemin complet de l'image
+      }));
+  
+      res.json(restaurants);
+    });
+  };
 
 // Fonction de login
 const restaurantLogin = async (req, res) => {
@@ -37,21 +56,28 @@ const restaurantLogin = async (req, res) => {
     }
 };
 
-// Fonction de registre
-const restaurantRegister = async (req, res) => {
-    const { name, email_address, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const sql = `INSERT INTO restaurant (name, email_address, password) VALUES (?, ?, ?)`;
 
-    db.query = (sql, [name, email_address, hashedPassword], (err, result) => {
-        if (err) {
-            console.error('Erreur lors de l\'insertion dans la base de données:', err);
-            res.status(500).send({ message: 'Erreur lors de la création du compte restaurant' });
-        } else {
-            res.status(201).send({ id: result.insertId, name, email_address });
-        }
-    });
+// Fonction de registre avec gestion de l'image
+const restaurantRegister = async (req, res) => {
+  const { name, email_address, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const imagePath = req.file ? `/uploads/${req.file.filename}` : null;  // Récupérer le chemin de l'image
+
+  const sql = `INSERT INTO restaurant (name, email_address, password, restaurant_img) VALUES (?, ?, ?, ?)`;
+
+  db.query(sql, [name, email_address, hashedPassword, imagePath], (err, result) => {
+    if (err) {
+      console.error('Erreur lors de l\'insertion dans la base de données:', err);
+      return res.status(500).send({ message: 'Erreur lors de la création du compte restaurant' });
+    } else {
+      res.status(201).send({ id: result.insertId, name, email_address });
+    }
+  });
 };
+
+
+
+
 
 
 
@@ -203,6 +229,7 @@ export {
     restaurantRegister,
     addMeal,
     getMealsByRestaurant,
+    getAllRestaurants,
     deleteMeal,
     getMealsById,
     restaurantAll,

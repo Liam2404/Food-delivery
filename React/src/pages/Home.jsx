@@ -51,7 +51,18 @@ export default function HomePage() {
           {restaurants.map(restaurant => (
             <div className="col mb-4" key={restaurant.id}>
               <div className="card h-100">
-                <img src={restaurant.image} className="card-img-top" alt={restaurant.name} />
+                {/* Vérification si l'image existe */}
+                {restaurant.image ? (
+                  <img 
+                    src={restaurant.image} 
+                    className="card-img-top" 
+                    alt={restaurant.name} 
+                  />
+                ) : (
+                  <div className="card-img-top bg-light d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
+                    <span>Pas d'image disponible</span>
+                  </div>
+                )}
                 <div className="card-body">
                   <h5 className="card-title">{restaurant.name}</h5>
                   <p className="card-text">{restaurant.description}</p>

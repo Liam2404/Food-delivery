@@ -6,32 +6,10 @@ import mysql from 'mysql';
 import userRouter from './Router/user.js';
 import stripeRouter from './Router/stripe.js';
 import restauRouter from './Router/restau.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import multer from 'multer';
+import upload from './middlewares/multer.js';  // Si vous utilisez multer comme middleware externe
 
+// Initialisation d'Express
 const app = express();
-const port = 3000;
-
-// Obtenez le répertoire courant
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Configurez multer pour le stockage des fichiers
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, 'uploads')); // Répertoire de destination
-    },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, Date.now() + ext); // Nom du fichier unique
-    }
-});
-
-const upload = multer({ storage: storage });
-
-// Middleware pour servir les fichiers statiques depuis le répertoire 'uploads'
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Liste des origines autorisées
 const allowedOrigins = ['http://localhost:5173'];
@@ -117,6 +95,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
     });
 });
 
+// Middleware pour détruire la session après traitement
 app.use((req, res, next) => {
     req.session.destroy(err => {
         if (err) {
@@ -126,6 +105,8 @@ app.use((req, res, next) => {
     });
 });
 
+// Définir le port
+const port = 3000;
 
 // Écoute du serveur sur le port spécifié
 app.listen(port, () => {

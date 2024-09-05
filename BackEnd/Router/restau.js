@@ -9,6 +9,7 @@ import {
     restaurantUpdate,
     addMeal,
     updateMeal,
+    getAllRestaurants,
     deleteMeal,
     getMealsByRestaurant,
     getMealsById
@@ -17,7 +18,8 @@ import {
 const router = Router();
 
 router.post("/login", restaurantLogin);
-router.post("/register", restaurantRegister);
+router.post('/register', upload.single('image'), restaurantRegister);
+router.get("/all", getAllRestaurants);
 router.get("/info/:id", restaurantInfo);
 router.get("/", restaurantAll);
 router.delete("/:id", restaurantDelete);
