@@ -5,7 +5,7 @@ export default function HomePage() {
   const [restaurants, setRestaurants] = useState([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [showMenuSidebar, setShowMenuSidebar] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); // État pour le texte de recherche
+  const [searchTerm, setSearchTerm] = useState(''); 
 
   // Fonction pour récupérer les restaurants
   const fetchRestaurants = async () => {
@@ -54,7 +54,8 @@ export default function HomePage() {
   const filteredRestaurants = restaurants.filter(restaurant =>
     restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  console.log(restaurants);
+  
   return (
     <>
       <section className="container mt-4">
@@ -70,13 +71,16 @@ export default function HomePage() {
         </div>
         
         <div className="row row-cols-1 row-cols-md-3 g-4">
-          {filteredRestaurants.map(restaurant => (
+          {filteredRestaurants.map(restaurant => {
+            console.log(restaurant);
+            
+            return (
             <div className="col mb-4" key={restaurant.id}>
               <div className="card h-100" style={{ borderRadius: '15px', overflow: 'hidden' }}>
                 {/* Vérification si l'image existe */}
-                {restaurant.image ? (
+                {restaurant.restaurant_img ? (
                   <img 
-                    src={`http://localhost:3000${restaurant.image}`}
+                    src={`http://localhost:3000${restaurant.restaurant_img}`}
                     className="card-img-top" 
                     alt={restaurant.name} 
                     style={{ borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }} 
@@ -96,7 +100,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-          ))}
+          )})}
         </div>
       </section>
   
