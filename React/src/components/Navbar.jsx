@@ -3,9 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
+import NavDropdown from 'react-bootstrap/NavDropdown';
 import logo from '../assets/logo.png';
 
-function Navbar() {
+function Navigation() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [emailLogin, setEmailLogin] = useState('');
   const [passwordLogin, setPasswordLogin] = useState('');
@@ -17,21 +20,20 @@ function Navbar() {
   const [passwordRegister, setPasswordRegister] = useState('');
   const [errorRegister, setErrorRegister] = useState('');
   const [user, setUser] = useState(null);
+  const [expanded, setExpanded] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Optionnel: Vous pouvez vérifier la session utilisateur au chargement de la page
     fetchUser();
   }, []);
-
 
   const handleLogin = async () => {
     try {
       const response = await fetch('http://localhost:3000/api/user/login', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email_address: emailLogin, password: passwordLogin }),
@@ -69,7 +71,7 @@ function Navbar() {
       const response = await fetch('http://localhost:3000/api/user/register', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username: usernameRegister, email_address: emailRegister, password: passwordRegister }),
@@ -94,25 +96,24 @@ function Navbar() {
     }
   };
 
-const fetchUser = async () => {
+  const fetchUser = async () => {
     try {
-        const response = await fetch('http://localhost:3000/api/user/session', {
-            method: 'GET',
-            credentials: 'include',
-        });
-        if (response.ok) {
-            const data = await response.json();
-            setUser(data);
-        } else {
-            console.error('Réponse non OK lors de la récupération de l\'utilisateur:', response.status);
-            setUser(null);
-        }
-    } catch (error) {
-        console.error('Erreur lors de la récupération des informations utilisateur:', error);
+      const response = await fetch('http://localhost:3000/api/user/session', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data);
+      } else {
+        console.error('Réponse non OK lors de la récupération de l\'utilisateur:', response.status);
         setUser(null);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des informations utilisateur:', error);
+      setUser(null);
     }
-};
-
+  };
 
   const handleLoginClose = () => setShowLoginModal(false);
   const handleLoginShow = () => setShowLoginModal(true);
@@ -128,7 +129,6 @@ const fetchUser = async () => {
     setShowLoginModal(false);
     setShowRegisterModal(true);
   };
-
 
   const handleLogout = async () => {
     try {
@@ -146,36 +146,35 @@ const fetchUser = async () => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-white">
-      <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
-
-      <Link className="navbar-brand" to="/">
+    <Navbar bg="light" expand="lg" expanded={expanded}>
+      <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)}>
+        <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
         Accueil
-      </Link>
-
-      <div className="ml-auto container d-flex align-items-center">
-    {user ? (
-        <div className="d-flex align-items-center">
-            <span className="mr-3">Bonjour, {user.username}</span>
-            <Button variant="primary" onClick={handleLogout}>
+      </Navbar.Brand>
+      <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(expanded ? false : true)} />
+      <Navbar.Collapse id="basic-navbar-nav">
+        <Nav className="ml-auto">
+          {user ? (
+            <>
+              <Nav.Link disabled>Bonjour, {user.username}</Nav.Link>
+              <Button variant="primary" onClick={handleLogout}>
                 Déconnexion
-            </Button>
-        </div>
-    ) : (
-        <>
-            <Button variant="primary" onClick={handleLoginShow}>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="primary" onClick={handleLoginShow}>
                 Connexion Client
-            </Button>
-            <Link to="/restaurant/section-speciale">
+              </Button>
+              <Nav.Link as={Link} to="/restaurant/section-speciale">
                 <Button variant="dark" className="ml-2">
-                    Section Spéciale Entreprise
+                  Section Spéciale Entreprise
                 </Button>
-            </Link>
-        </>
-    )}
-</div>
-
-
+              </Nav.Link>
+            </>
+          )}
+        </Nav>
+      </Navbar.Collapse>
 
       <Modal show={showLoginModal} onHide={handleLoginClose}>
         <Modal.Header closeButton>
@@ -277,8 +276,8 @@ const fetchUser = async () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </nav>
+    </Navbar>
   );
 }
 
-export default Navbar;
+export default Navigation;

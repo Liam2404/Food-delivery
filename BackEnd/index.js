@@ -6,7 +6,7 @@ import mysql from 'mysql';
 import userRouter from './Router/user.js';
 import stripeRouter from './Router/stripe.js';
 import restauRouter from './Router/restau.js';
-import upload from './middlewares/multer.js';  // Si vous utilisez multer comme middleware externe
+import upload from './middlewares/multer.js';  
 
 // Initialisation d'Express
 const app = express();
@@ -59,11 +59,14 @@ app.use((req, res, next) => {
     next();
 });
 
-// Routes pour Stripe Webhook
-app.use('/webhook', stripeRouter);
-
 // Middleware pour parser les corps de requête JSON
 app.use(express.json());
+
+// Rendre le dossier 'uploads' accessible
+app.use('/uploads', express.static('uploads'));
+
+// Routes pour Stripe Webhook
+app.use('/webhook', stripeRouter);
 
 // Routes pour les utilisateurs
 app.use('/api/user', userRouter);

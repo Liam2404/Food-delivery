@@ -5,6 +5,7 @@ export default function HomePage() {
   const [restaurants, setRestaurants] = useState([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [showMenuSidebar, setShowMenuSidebar] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(''); // État pour le texte de recherche
 
   // Fonction pour récupérer les restaurants
   const fetchRestaurants = async () => {
@@ -44,22 +45,44 @@ export default function HomePage() {
     setShowMenuSidebar(false);
   };
 
+  // Fonction pour gérer la recherche
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  // Filtrer les restaurants en fonction du texte de recherche
+  const filteredRestaurants = restaurants.filter(restaurant =>
+    restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <section className="container mt-4">
+        {/* Barre de recherche */}
+        <div className="mb-4">
+          <input 
+            type="text"
+            className="form-control"
+            placeholder="Rechercher un restaurant"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>
+        
         <div className="row row-cols-1 row-cols-md-3 g-4">
-          {restaurants.map(restaurant => (
+          {filteredRestaurants.map(restaurant => (
             <div className="col mb-4" key={restaurant.id}>
-              <div className="card h-100">
+              <div className="card h-100" style={{ borderRadius: '15px', overflow: 'hidden' }}>
                 {/* Vérification si l'image existe */}
                 {restaurant.image ? (
                   <img 
-                    src={restaurant.image} 
+                    src={`http://localhost:3000${restaurant.image}`}
                     className="card-img-top" 
                     alt={restaurant.name} 
+                    style={{ borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }} 
                   />
                 ) : (
-                  <div className="card-img-top bg-light d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
+                  <div className="card-img-top bg-light d-flex justify-content-center align-items-center" style={{ height: '200px', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
                     <span>Pas d'image disponible</span>
                   </div>
                 )}
@@ -76,7 +99,7 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-
+  
       {/* Sidebar pour afficher le menu */}
       {showMenuSidebar && selectedRestaurant && (
         <RestaurantMenu
