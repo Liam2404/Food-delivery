@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 
 const userRegister = async (req, res) => {
     const { username, email_address, password } = req.body;
-
+    console.log('Requête d\'inscription:', req.body);
     try {
         if (!username || !email_address || !password) {
             return res.status(400).json({ message: 'Les champs username, email_address et password sont requis' });
