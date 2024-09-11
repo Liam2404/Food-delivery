@@ -17,6 +17,7 @@ const allowedOrigins = ['http://localhost:5173'];
 // Middleware pour configurer CORS
 app.use(cors({
     origin: (origin, callback) => {
+        console.log('Origine de la requête:', origin);
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
@@ -33,16 +34,17 @@ app.use(cookieParser());
 
 // Middleware pour gérer les sessions
 app.use(session({
-    secret: 'your-secret-key',
+    secret: 'votre-secret', // Utilisez une clé secrète forte
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false, // Modifiez en `true` en production avec HTTPS
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000, // Durée de vie du cookie 24h
-        sameSite: 'lax',
-    },
-}));
+      httpOnly: true, // Assurez-vous que les cookies ne sont pas accessibles depuis le client
+      secure: false,  // Utilisez 'true' en production si vous êtes en HTTPS
+      sameSite: 'lax', // Permet de partager les cookies entre le backend et le frontend
+      maxAge: 24 * 60 * 60 * 1000 // Durée de vie du cookie : 1 jour
+    }
+  }));
+  
 
 // Configuration de la connexion à la base de données avec pool de connexions
 export const db = mysql.createPool({
@@ -98,15 +100,6 @@ app.post('/upload', upload.single('image'), (req, res) => {
     });
 });
 
-// Middleware pour détruire la session après traitement
-app.use((req, res, next) => {
-    req.session.destroy(err => {
-        if (err) {
-            console.error('Erreur lors de la destruction de la session:', err);
-        }
-        next();
-    });
-});
 
 // Définir le port
 const port = 3000;

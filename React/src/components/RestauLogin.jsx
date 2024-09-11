@@ -22,13 +22,15 @@ export default function RestaurantLogin() {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ usernameOrEmail, password }),
+        body: JSON.stringify({ email_address: usernameOrEmail, password }),
+        credentials: 'include'
       });
     
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('user', JSON.stringify({ ...data, isRestaurant: true }));
         navigate('/restaurant/pannel');
+        console.log('Connexion réussi')
       } else {
         const data = await response.json();
         setError(data.message || 'Identifiants incorrects');

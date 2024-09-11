@@ -19,7 +19,9 @@ const RestauPanel = () => {
 
   const fetchMeals = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/restaurant/meals/restaurant/:id');
+      const response = await axios.get('http://localhost:3000/api/restaurant/meals/restaurant/:id', {
+        withCredentials: true  
+      });
       setMeals(response.data);
     } catch (error) {
       setError(error.message);
@@ -69,9 +71,20 @@ const RestauPanel = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await axios.post('http://localhost:3000/api/user/logout', {}, { withCredentials: true });
+      localStorage.removeItem('user');
+      navigate('/');
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion :', error);
+    }
+  };
+
   return (
     <div>
       <h1>Restaurant Admin Panel</h1>
+      <button onClick={handleLogout}>Logout</button>
       {error && <p className="text-danger">{error}</p>}
 
       <div>

@@ -146,7 +146,7 @@ function Navigation() {
   };
 
   return (
-    <Navbar bg="light" expand="lg" expanded={expanded}>
+    <Navbar bg="light" expand="lg" expanded={expanded} style={{ borderRadius: '15px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' }}>
       <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)}>
         <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
         Accueil
