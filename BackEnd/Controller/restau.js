@@ -32,7 +32,7 @@ const restaurantLogin = async (req, res) => {
                 console.error('Erreur lors de la recherche du compte:', err);
                 return res.status(500).send({ message: 'Erreur lors de la connexion au compte' });
             }
-
+                console.log('Résultats de la requête:', results)
             if (results.length === 0) {
                 return res.status(401).send({ message: 'Adresse email incorrecte ou compte inexistant' });
             }

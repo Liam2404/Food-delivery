@@ -34,7 +34,7 @@ app.use(cookieParser());
 
 // Middleware pour gérer les sessions
 app.use(session({
-    secret: 'votre-secret', // Utilisez une clé secrète forte
+    secret: 'votre-secret',
     resave: false,
     saveUninitialized: false,
     cookie: {

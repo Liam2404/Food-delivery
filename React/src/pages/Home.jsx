@@ -54,7 +54,6 @@ export default function HomePage() {
   const filteredRestaurants = restaurants.filter(restaurant =>
     restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  console.log(restaurants);
   
   return (
     <>
@@ -93,7 +92,7 @@ export default function HomePage() {
                 <div className="card-body">
                   <h5 className="card-title">{restaurant.name}</h5>
                   <p className="card-text">{restaurant.description}</p>
-                  <p className="card-text">Cuisine: {restaurant.cuisine}</p>
+                  <p className="card-text">Cuisine: {restaurant.food_type}</p>
                   <p className="card-text">Note: {restaurant.rating}</p>
                   <p className="card-text">Temps de livraison: {restaurant.deliveryTime}</p>
                   <button className="btn btn-primary" onClick={() => handleShowMenuSidebar(restaurant)}>Voir le menu</button>

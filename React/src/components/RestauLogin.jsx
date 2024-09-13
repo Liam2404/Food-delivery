@@ -4,13 +4,13 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 export default function RestaurantLogin() {
-  const [usernameOrEmail, setUsernameOrEmail] = useState('');
+  const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    if (!usernameOrEmail || !password) {
+    if (!emailAddress || !password) {
       setError('Veuillez remplir tous les champs.');
       return;
     }
@@ -22,7 +22,7 @@ export default function RestaurantLogin() {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email_address: usernameOrEmail, password }),
+        body: JSON.stringify({ email_address: emailAddress, password }),
         credentials: 'include'
       });
     
@@ -46,14 +46,14 @@ export default function RestaurantLogin() {
     <div className="d-flex justify-content-center align-items-center vh-100">
       <Form style={{ width: '300px' }}>
         <h2 className="text-center">Connexion Restaurant</h2>
-        <Form.Group controlId="usernameOrEmail">
-          <Form.Label>Nom d'utilisateur ou Email</Form.Label>
+        <Form.Group controlId="email_address">
+          <Form.Label>Email</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Entrer votre nom d'utilisateur ou email"
-            value={usernameOrEmail}
-            onChange={(e) => setUsernameOrEmail(e.target.value)}
-            autoComplete="username email"
+            placeholder="Entrer votre email"
+            value={emailAddress}
+            onChange={(e) => setEmailAddress(e.target.value)}
+            autoComplete="email"
           />
         </Form.Group>
 
