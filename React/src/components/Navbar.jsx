@@ -146,10 +146,9 @@ function Navigation() {
   };
 
   return (
-    <Navbar bg="light" expand="lg" expanded={expanded} style={{ borderRadius: '15px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' }}>
+    <Navbar expand="lg" expanded={expanded} style={{ borderRadius: '15px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: 'rgb(255, 188, 13)' }}>
       <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)}>
-        <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px' }} />
-        Accueil
+        <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px', borderRadius: '50%' }} />
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(expanded ? false : true)} />
       <Navbar.Collapse id="basic-navbar-nav">
@@ -163,11 +162,11 @@ function Navigation() {
             </>
           ) : (
             <>
-              <Button variant="primary" onClick={handleLoginShow}>
+              <Button variant="light" onClick={handleLoginShow}>
                 Connexion Client
               </Button>
               <Nav.Link as={Link} to="/restaurant/section-speciale">
-                <Button variant="dark" className="ml-2">
+                <Button variant="secondary" className="ml-2">
                   Section Spéciale Entreprise
                 </Button>
               </Nav.Link>
