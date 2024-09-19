@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import restaurantAuthMiddleware from '../middlewares/authMiddleware.js';
 import upload from '../upload.js';
 import {
     restaurantLogin,
@@ -25,9 +26,9 @@ router.get("/", restaurantAll);
 router.delete("/:id", restaurantDelete);
 router.put("/:id", restaurantUpdate);
 
-router.post("/meal", upload.single('meal_img'), addMeal);
-router.put("/meal/:id", upload.single('meal_img'), updateMeal);
-router.delete("/meal/:id", deleteMeal);
+router.post("/meal", restaurantAuthMiddleware, upload.single('meal_img'), addMeal);
+router.put("/meal/:id", restaurantAuthMiddleware, upload.single('meal_img'), updateMeal);
+router.delete("/meal/:id", restaurantAuthMiddleware, deleteMeal);
 router.get("/meals/restaurant/:restaurantId", getMealsByRestaurant);
 router.get("/meals/:id", getMealsById);
 

@@ -4,22 +4,32 @@ import axios from 'axios';
 
 const RestauPanel = () => {
   const [meals, setMeals] = useState([]);
+  const [restaurant, setRestaurant] = useState(null);  // Ajout de l'état pour le restaurant
   const [newMeal, setNewMeal] = useState({
     meal_name: '',
     meal_description: '',
     meal_price: '',
-    meal_img: null,
+    meal_img: '',
   });
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Récupérer les informations du restaurant depuis le localStorage
+    const storedRestaurant = JSON.parse(localStorage.getItem('user'));
+    
+    if (storedRestaurant && storedRestaurant.isRestaurant) {
+      setRestaurant(storedRestaurant);
+    } else {
+      setError('Aucun restaurant connecté');
+    }
+
     fetchMeals();
   }, []);
 
   const fetchMeals = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/restaurant/meals/restaurant/:id', {
+      const response = await axios.get(`http://localhost:3000/api/restaurant/meals/restaurant/${restaurant.id}`, {
         withCredentials: true  
       });
       setMeals(response.data);
@@ -48,6 +58,7 @@ const RestauPanel = () => {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+        withCredentials: true,
       });
 
       fetchMeals();
@@ -55,7 +66,7 @@ const RestauPanel = () => {
         meal_name: '',
         meal_description: '',
         meal_price: '',
-        meal_img: null,
+        meal_img: '',
       });
     } catch (error) {
       setError(error.message);
@@ -64,49 +75,46 @@ const RestauPanel = () => {
 
   const handleDeleteMeal = async (mealId) => {
     try {
-      await axios.delete(`http://localhost:3000/api/restaurant/meal/${mealId}`);
+      await axios.delete(`http://localhost:3000/api/restaurant/meal/${mealId}`, {
+        withCredentials: true
+      });
       fetchMeals();
     } catch (error) {
       setError(error.message);
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await axios.post('http://localhost:3000/api/user/logout', {}, { withCredentials: true });
-      localStorage.removeItem('user');
-      navigate('/');
-    } catch (error) {
-      console.error('Erreur lors de la déconnexion :', error);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/');
   };
 
   return (
     <div>
-      <h1>Restaurant Admin Panel</h1>
-      <button onClick={handleLogout}>Logout</button>
+      <h1>{restaurant ? `Restaurant: ${restaurant.name}` : 'Chargement...'}</h1> {/* Affichage du nom du restaurant */}
+      <button onClick={handleLogout}>Se déconnecter</button>
       {error && <p className="text-danger">{error}</p>}
 
       <div>
-        <h2>Add New Meal</h2>
+        <h2>Ajouter un nouveau plat</h2>
         <input
           type="text"
           name="meal_name"
-          placeholder="Meal Name"
+          placeholder="Nom du plat"
           value={newMeal.meal_name}
           onChange={handleInputChange}
         />
         <input
           type="text"
           name="meal_description"
-          placeholder="Meal Description"
+          placeholder="Description du plat"
           value={newMeal.meal_description}
           onChange={handleInputChange}
         />
         <input
           type="number"
           name="meal_price"
-          placeholder="Meal Price"
+          placeholder="Prix du plat"
           value={newMeal.meal_price}
           onChange={handleInputChange}
         />
@@ -115,11 +123,11 @@ const RestauPanel = () => {
           name="meal_img"
           onChange={handleImageChange}
         />
-        <button onClick={handleAddMeal}>Add Meal</button>
+        <button onClick={handleAddMeal}>Ajouter un plat</button>
       </div>
 
       <div>
-        <h2>Meals</h2>
+        <h2>Plats</h2>
         <ul>
           {Array.isArray(meals) && meals.map((meal) => (
             <li key={meal.meal_id}>
@@ -127,7 +135,7 @@ const RestauPanel = () => {
               <p>{meal.meal_description}</p>
               <p>{meal.meal_price}</p>
               {meal.meal_img && <img src={`http://localhost:3000/${meal.meal_img}`} alt={meal.meal_name} />}
-              <button onClick={() => handleDeleteMeal(meal.meal_id)}>Delete</button>
+              <button onClick={() => handleDeleteMeal(meal.meal_id)}>Supprimer</button>
             </li>
           ))}
         </ul>

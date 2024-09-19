@@ -1,12 +1,10 @@
-// Middleware pour vérifier si l'utilisateur est connecté
-const authMiddleware = (req, res, next) => {
-    if (req.session.user) {
-        // Si l'utilisateur est connecté, passez à l'étape suivante
-        next();
+// Middleware pour vérifier si le restaurant est connecté
+const restaurantAuthMiddleware = (req, res, next) => {
+    if (req.session.restaurant) {
+        next(); // Si le restaurant est connecté, on continue
     } else {
-        // Si l'utilisateur n'est pas connecté, renvoyez une erreur 401 (non autorisé)
-        res.status(401).send('Utilisateur non connecté');
+        res.status(401).send('Restaurant non connecté');
     }
 };
 
-export default authMiddleware;
+export default restaurantAuthMiddleware;
