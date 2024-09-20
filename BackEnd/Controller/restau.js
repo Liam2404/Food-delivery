@@ -91,12 +91,8 @@ const restaurantRegister = async (req, res) => {
 
 
 const getMealsByRestaurant = async (req, res) => {
-    // Vérifiez d'abord si la session utilisateur existe
-    if (!req.session.user) {
-        return res.status(401).json({ message: 'Non autorisé, veuillez vous connecter.' });
-    }
 
-    const restaurantId = req.session.user.id;
+    const restaurantId = req.session.restaurant.id;
     const query = 'SELECT * FROM meal WHERE restaurant_id = ?';
     db.query(query, [restaurantId], (err, results) => {
         if (err) {
@@ -112,7 +108,7 @@ const getMealsByRestaurant = async (req, res) => {
 
 const deleteMeal = async (req, res) => {
     const { id } = req.params;
-    const restaurantId = req.session.user.id;
+    const restaurantId = req.session.restaurant.id;
 
     db.query('SELECT * FROM meal WHERE meal_id = ? AND restaurant_id = ?', [id, restaurantId], (err, results) => {
         if (err) {

@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const RestauPanel = () => {
   const [meals, setMeals] = useState([]);
-  const [restaurant, setRestaurant] = useState(null);  // Ajout de l'état pour le restaurant
+  const [restaurant, setRestaurant] = useState(null);  
   const [newMeal, setNewMeal] = useState({
     meal_name: '',
     meal_description: '',
@@ -15,7 +15,6 @@ const RestauPanel = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Récupérer les informations du restaurant depuis le localStorage
     const storedRestaurant = JSON.parse(localStorage.getItem('user'));
     
     if (storedRestaurant && storedRestaurant.isRestaurant) {
@@ -23,10 +22,14 @@ const RestauPanel = () => {
     } else {
       setError('Aucun restaurant connecté');
     }
-
-    fetchMeals();
   }, []);
-
+  
+  useEffect(() => {
+    if (restaurant) {
+      fetchMeals();
+    }
+  }, [restaurant]);
+  
   const fetchMeals = async () => {
     try {
       const response = await axios.get(`http://localhost:3000/api/restaurant/meals/restaurant/${restaurant.id}`, {
@@ -37,6 +40,7 @@ const RestauPanel = () => {
       setError(error.message);
     }
   };
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -90,8 +94,8 @@ const RestauPanel = () => {
   };
 
   return (
-    <div>
-      <h1>{restaurant ? `Restaurant: ${restaurant.name}` : 'Chargement...'}</h1> {/* Affichage du nom du restaurant */}
+    <div style={{ padding: '20px' }}>
+      <h1>{restaurant ? `Restaurant: ${restaurant.name}` : 'Chargement...'}</h1>
       <button onClick={handleLogout}>Se déconnecter</button>
       {error && <p className="text-danger">{error}</p>}
 
@@ -128,14 +132,49 @@ const RestauPanel = () => {
 
       <div>
         <h2>Plats</h2>
-        <ul>
+        <ul style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', 
+          gap: '20px', 
+          listStyle: 'none', 
+          padding: 0 
+        }}>
           {Array.isArray(meals) && meals.map((meal) => (
-            <li key={meal.meal_id}>
-              <p>{meal.meal_name}</p>
+            <li key={meal.meal_id} style={{ 
+              border: '1px solid #ddd', 
+              padding: '15px', 
+              borderRadius: '10px',
+              boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)' 
+            }}>
+              <p><strong>{meal.meal_name}</strong></p>
               <p>{meal.meal_description}</p>
-              <p>{meal.meal_price}</p>
-              {meal.meal_img && <img src={`http://localhost:3000/${meal.meal_img}`} alt={meal.meal_name} />}
-              <button onClick={() => handleDeleteMeal(meal.meal_id)}>Supprimer</button>
+              <p>{meal.meal_price} €</p>
+              {meal.meal_img && (
+                <img 
+                  src={`http://localhost:3000/${meal.meal_img}`} 
+                  alt={meal.meal_name} 
+                  style={{ 
+                    width: '100%', 
+                    maxHeight: '200px', 
+                    objectFit: 'cover', 
+                    borderRadius: '8px' 
+                  }} 
+                />
+              )}
+              <button 
+                onClick={() => handleDeleteMeal(meal.meal_id)} 
+                style={{
+                  marginTop: '10px',
+                  backgroundColor: '#ff4d4d', 
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+              >
+                Supprimer
+              </button>
             </li>
           ))}
         </ul>
