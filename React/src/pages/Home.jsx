@@ -5,6 +5,7 @@ export default function HomePage() {
   const [restaurants, setRestaurants] = useState([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [showMenuSidebar, setShowMenuSidebar] = useState(false);
+  const [meals, setMeals] = useState([]); // Initialisation des plats
   const [searchTerm, setSearchTerm] = useState(''); 
 
   // Fonction pour récupérer les restaurants
@@ -29,20 +30,45 @@ export default function HomePage() {
     }
   };
 
+  // Fonction pour récupérer les plats d'un restaurant spécifique
+  const fetchMeals = async (restaurantId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/restaurant/meals/restaurant/${restaurantId}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des plats');
+      }
+
+      const data = await response.json();
+      setMeals(data); // Mettre à jour les plats avec ceux du restaurant sélectionné
+    } catch (error) {
+      console.error('Erreur lors de la récupération des plats :', error);
+    }
+  };
+
   // Utiliser useEffect pour appeler la fonction fetchRestaurants au chargement du composant
   useEffect(() => {
     fetchRestaurants();
   }, []);
 
-  // Fonction pour afficher le menu latéral
+  // Fonction pour afficher le menu latéral et récupérer les plats
   const handleShowMenuSidebar = (restaurant) => {
     setSelectedRestaurant(restaurant);
     setShowMenuSidebar(true);
+    fetchMeals(restaurant.id); // Récupérer les plats du restaurant sélectionné
   };
 
   // Fonction pour masquer le menu latéral
   const handleCloseMenuSidebar = () => {
     setShowMenuSidebar(false);
+    setSelectedRestaurant(null);
+    setMeals([]); // Réinitialiser les plats lorsque le menu est fermé
   };
 
   // Fonction pour gérer la recherche
@@ -71,35 +97,34 @@ export default function HomePage() {
         
         <div className="row row-cols-1 row-cols-md-3 g-4">
           {filteredRestaurants.map(restaurant => {
-            console.log(restaurant);
-            
             return (
-            <div className="col mb-4" key={restaurant.id}>
-              <div className="card h-100" style={{ borderRadius: '15px', overflow: 'hidden' }}>
-                {/* Vérification si l'image existe */}
-                {restaurant.restaurant_img ? (
-                  <img 
-                    src={`http://localhost:3000${restaurant.restaurant_img}`}
-                    className="card-img-top" 
-                    alt={restaurant.name} 
-                    style={{ borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }} 
-                  />
-                ) : (
-                  <div className="card-img-top bg-light d-flex justify-content-center align-items-center" style={{ height: '200px', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
-                    <span>Pas d'image disponible</span>
+              <div className="col mb-4" key={restaurant.id}>
+                <div className="card h-100" style={{ borderRadius: '15px', overflow: 'hidden' }}>
+                  {/* Vérification si l'image existe */}
+                  {restaurant.restaurant_img ? (
+                    <img 
+                      src={`http://localhost:3000${restaurant.restaurant_img}`}
+                      className="card-img-top" 
+                      alt={restaurant.name} 
+                      style={{ borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }} 
+                    />
+                  ) : (
+                    <div className="card-img-top bg-light d-flex justify-content-center align-items-center" style={{ height: '200px', borderTopLeftRadius: '15px', borderTopRightRadius: '15px' }}>
+                      <span>Pas d'image disponible</span>
+                    </div>
+                  )}
+                  <div className="card-body">
+                    <h5 className="card-title">{restaurant.name}</h5>
+                    <p className="card-text">{restaurant.description}</p>
+                    <p className="card-text">Cuisine: {restaurant.food_type}</p>
+                    <p className="card-text">Note: {restaurant.rating}</p>
+                    <p className="card-text">Temps de livraison: {restaurant.deliveryTime}</p>
+                    <button className="btn btn-primary" onClick={() => handleShowMenuSidebar(restaurant)}>Voir le menu</button>
                   </div>
-                )}
-                <div className="card-body">
-                  <h5 className="card-title">{restaurant.name}</h5>
-                  <p className="card-text">{restaurant.description}</p>
-                  <p className="card-text">Cuisine: {restaurant.food_type}</p>
-                  <p className="card-text">Note: {restaurant.rating}</p>
-                  <p className="card-text">Temps de livraison: {restaurant.deliveryTime}</p>
-                  <button className="btn btn-primary" onClick={() => handleShowMenuSidebar(restaurant)}>Voir le menu</button>
                 </div>
               </div>
-            </div>
-          )})}
+            );
+          })}
         </div>
       </section>
   
@@ -107,6 +132,7 @@ export default function HomePage() {
       {showMenuSidebar && selectedRestaurant && (
         <RestaurantMenu
           restaurant={selectedRestaurant}
+          meals={meals} // Transmettre les plats au composant RestaurantMenu
           handleCloseMenuSidebar={handleCloseMenuSidebar}
         />
       )}

@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 
-const RestaurantMenu = ({ restaurant, handleCloseMenuSidebar }) => {
+const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
   const [cart, setCart] = useState([]);
 
   // Fonction pour ajouter un plat au panier
@@ -12,9 +12,9 @@ const RestaurantMenu = ({ restaurant, handleCloseMenuSidebar }) => {
     setCart(updatedCart);
   };
 
-  // Fonction pour calculer le total du panier
+  // Fonction pour calculer le total du panier avec 2 décimales
   const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.price, 0);
+    return cart.reduce((total, item) => total + item.price, 0).toFixed(2);
   };
 
   // Fonction pour vider le panier
@@ -28,17 +28,24 @@ const RestaurantMenu = ({ restaurant, handleCloseMenuSidebar }) => {
         <Modal.Title>Menu de {restaurant.name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <ListGroup variant="flush">
-          {restaurant.menu.map(item => (
-            <ListGroup.Item key={item.id}>
-              <div className="d-flex w-100 justify-content-between">
-                <h5>{item.name}</h5>
-                <p className="mb-0">Prix: {item.price} €</p>
-                <Button variant="primary" onClick={() => addToCart(item)}>Ajouter au panier</Button>
-              </div>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+        {/* Vérification si le menu existe et contient des éléments */}
+        {meals && meals.length > 0 ? (
+          <ListGroup variant="flush">
+            {meals.map(item => (
+              <ListGroup.Item key={item.id}>
+                <div className="d-flex w-100 justify-content-between">
+                  <h5>{item.name}</h5>
+                  <p className="mb-0">Prix: {item.price.toFixed(2)} €</p>
+                  <Button variant="primary" onClick={() => addToCart(item)}>Ajouter au panier</Button>
+                </div>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        ) : (
+          <p>Aucun plat disponible pour ce restaurant.</p>
+        )}
+
+        {/* Affichage du panier */}
         {cart.length > 0 && (
           <div className="mt-3">
             <h5>Panier</h5>
@@ -47,7 +54,7 @@ const RestaurantMenu = ({ restaurant, handleCloseMenuSidebar }) => {
                 <ListGroup.Item key={index}>
                   <div className="d-flex w-100 justify-content-between">
                     <span>{item.name}</span>
-                    <span>{item.price} €</span>
+                    <span>{item.price.toFixed(2)} €</span>
                   </div>
                 </ListGroup.Item>
               ))}
@@ -65,6 +72,7 @@ const RestaurantMenu = ({ restaurant, handleCloseMenuSidebar }) => {
         <Button
           variant="primary"
           onClick={() => {
+            // Remplacez par un utilisateur réel si nécessaire
             const userId = user.id;
             const url = `https://buy.stripe.com/test_7sI16We6Ah0LfDi3cc?client_reference_id=${userId}`;
             window.location.href = url;
@@ -72,7 +80,6 @@ const RestaurantMenu = ({ restaurant, handleCloseMenuSidebar }) => {
         >
           Commander
         </Button>
-
       </Modal.Footer>
     </Modal>
   );
