@@ -146,7 +146,7 @@ function Navigation() {
   };
 
   return (
-    <Navbar expand="lg" expanded={expanded} style={{ borderRadius: '15px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: 'rgb(255, 188, 13)' }}>
+    <Navbar expand="lg" expanded={expanded} style={{ borderRadius: '15px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: 'rgb(255, 255, 255)' }}>
       <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)}>
         <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px', borderRadius: '50%' }} />
       </Navbar.Brand>
@@ -162,7 +162,7 @@ function Navigation() {
             </>
           ) : (
             <>
-              <Button variant="light" onClick={handleLoginShow}>
+              <Button variant="primary" onClick={handleLoginShow}>
                 Connexion Client
               </Button>
               <Nav.Link as={Link} to="/restaurant/section-speciale">

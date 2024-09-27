@@ -91,15 +91,15 @@ const restaurantRegister = async (req, res) => {
 
 
 const getMealsByRestaurant = async (req, res) => {
+    const { restaurantId } = req.params;
 
-    const restaurantId = req.session.restaurant.id;
     const query = 'SELECT * FROM meal WHERE restaurant_id = ?';
-    db.query(query, [restaurantId], (err, results) => {
+    db.query(query, [restaurantId], (err, results) => { 
         if (err) {
             console.error('Erreur lors de la récupération des repas:', err);
             return res.status(500).json({ error: 'Erreur lors de la récupération des repas' });
         }
-        res.json(results);
+        res.json(results); 
     });
 };
 
