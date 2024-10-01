@@ -14,7 +14,7 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
 
   // Fonction pour calculer le total du panier avec 2 décimales
   const calculateTotal = () => {
-    return cart.reduce((total, item) => total + item.price, 0).toFixed(2);
+    return cart.reduce((total, item) => total + parseFloat(item.meal_price), 0).toFixed(2);
   };
 
   // Fonction pour vider le panier
@@ -34,8 +34,23 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
             {meals.map(item => (
               <ListGroup.Item key={item.id}>
                 <div className="d-flex w-100 justify-content-between">
-                  <h5>{item.name}</h5>
-                  <p className="mb-0">Prix: {item.price.toFixed(2)} €</p>
+                  <div>
+                    <h5>{item.meal_name}</h5>
+                    <p>{item.meal_description}</p>
+                    <p className="mb-0">Prix: {parseFloat(item.meal_price).toFixed(2)} €</p>
+                  </div>
+                  {/* Affichage de l'image du plat */}
+                  {item.meal_img ? (
+                    <img
+                      src={`http://localhost:3000${item.meal_img}`}
+                      alt={item.meal_name}
+                      style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div className="bg-light d-flex justify-content-center align-items-center" style={{ width: '100px', height: '100px' }}>
+                      <span>Pas d'image</span>
+                    </div>
+                  )}
                   <Button variant="primary" onClick={() => addToCart(item)}>Ajouter au panier</Button>
                 </div>
               </ListGroup.Item>
@@ -53,8 +68,8 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
               {cart.map((item, index) => (
                 <ListGroup.Item key={index}>
                   <div className="d-flex w-100 justify-content-between">
-                    <span>{item.name}</span>
-                    <span>{item.price.toFixed(2)} €</span>
+                    <span>{item.meal_name}</span>
+                    <span>{parseFloat(item.meal_price).toFixed(2)} €</span>
                   </div>
                 </ListGroup.Item>
               ))}
