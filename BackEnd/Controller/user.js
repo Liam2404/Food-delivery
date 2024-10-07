@@ -35,7 +35,7 @@ const loginUser = async (req, res) => {
 
     try {
         const sql = 'SELECT * FROM client WHERE email_address = ?';
-        connection.query(sql, [email_address], async (err, results) => {
+        req.db.query(sql, [email_address], async (err, results) => {
             if (err) {
                 console.error('Erreur lors de la recherche du compte:', err);
                 return res.status(500).send({ message: 'Erreur lors de la connexion au compte' });
@@ -52,6 +52,7 @@ const loginUser = async (req, res) => {
                 return res.status(401).send({ message: 'Mot de passe incorrect' });
             }
 
+            // Stockez les informations du client dans req.session.user
             req.session.user = {
                 id: results[0].id,
                 username: results[0].username,
@@ -67,6 +68,7 @@ const loginUser = async (req, res) => {
         res.status(500).send({ message: 'Erreur lors de la connexion au compte' });
     }
 };
+
 
 
 

@@ -44,6 +44,7 @@ function Navigation() {
         const data = await response.json();
         setEmailLogin('');
         setPasswordLogin('');
+        localStorage.setItem('user', JSON.stringify(data));
         setErrorLogin('');
         setUser(data); // Mettre à jour l'état utilisateur après la connexion
         handleLoginClose(); // Fermer le modal de connexion

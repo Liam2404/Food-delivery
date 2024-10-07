@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 
 const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
   const [cart, setCart] = useState([]);
+  const [user, setUser] = useState(null);
 
   // Fonction pour ajouter un plat au panier
   const addToCart = (item) => {
@@ -21,6 +22,14 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
   const clearCart = () => {
     setCart([]);
   };
+
+  // Récupérer les informations de l'utilisateur à partir du localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   return (
     <Modal show={true} onHide={handleCloseMenuSidebar} size="lg">
@@ -87,10 +96,13 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
         <Button
           variant="primary"
           onClick={() => {
-            // Remplacez par un utilisateur réel si nécessaire
-            const userId = user.id;
-            const url = `https://buy.stripe.com/test_7sI16We6Ah0LfDi3cc?client_reference_id=${userId}`;
-            window.location.href = url;
+            if (user) {
+              const userId = user.id;
+              const url = `https://buy.stripe.com/test_7sI16We6Ah0LfDi3cc?client_reference_id=${userId}`;
+              window.location.href = url;
+            } else {
+              alert('Veuillez vous connecter avant de commander.');
+            }
           }}
         >
           Commander
