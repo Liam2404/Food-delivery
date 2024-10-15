@@ -245,7 +245,69 @@ const updateMeal = (req, res) => {
     });
 };
 
+const addRating = (req, res) => {
+    const { restaurant_id, rating } = req.body;
+    const user_id = req.session.user ? req.session.user.id : null;
 
+    if (!user_id) {
+        return res.status(401).json({ message: 'Utilisateur non connecté' });
+    }
+
+    if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ message: 'La note doit être comprise entre 1 et 5' });
+    }
+
+    const sql = 'INSERT INTO ratings (restaurant_id, user_id, rating) VALUES (?, ?, ?)';
+    db.query(sql, [restaurant_id, user_id, rating], (err, result) => {
+        if (err) {
+            console.error('Erreur lors de l\'ajout de la note :', err);
+            return res.status(500).json({ message: 'Erreur lors de l\'ajout de la note' });
+        }
+        res.status(201).json({ message: 'Note ajoutée avec succès', ratingId: result.insertId });
+    });
+};
+
+
+const getAverageRating = (req, res) => {
+    const { restaurantId } = req.params;
+
+    const sql = 'SELECT AVG(rating) AS averageRating FROM ratings WHERE restaurant_id = ?';
+    db.query(sql, [restaurantId], (err, results) => {
+        if (err) {
+            console.error('Erreur lors de la récupération des notes :', err);
+            return res.status(500).json({ message: 'Erreur lors de la récupération des notes' });
+        }
+
+        const averageRating = results[0].averageRating ? parseFloat(results[0].averageRating).toFixed(2) : 'Pas de note';
+        res.status(200).json({ averageRating });
+    });
+};
+
+const updateRating = (req, res) => {
+    const { ratingId } = req.params;
+    const { rating } = req.body;
+    const user_id = req.session.user ? req.session.user.id : null;
+
+    if (!user_id) {
+        return res.status(401).json({ message: 'Utilisateur non connecté' });
+    }
+
+    if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ message: 'La note doit être comprise entre 1 et 5' });
+    }
+
+    const sql = 'UPDATE ratings SET rating = ? WHERE id = ? AND user_id = ?';
+    db.query(sql, [rating, ratingId, user_id], (err, result) => {
+        if (err) {
+            console.error('Erreur lors de la mise à jour de la note :', err);
+            return res.status(500).json({ message: 'Erreur lors de la mise à jour de la note' });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Note non trouvée ou non autorisée' });
+        }
+        res.status(200).json({ message: 'Note mise à jour avec succès' });
+    });
+};
 
 
 export {
@@ -260,5 +322,8 @@ export {
     restaurantDelete,
     restaurantInfo,
     restaurantUpdate,
-    updateMeal
+    updateMeal,
+    addRating,
+    getAverageRating,
+    updateRating,
 };

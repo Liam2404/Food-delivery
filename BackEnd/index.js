@@ -76,6 +76,7 @@ app.use('/api/user', userRouter);
 // Routes pour les restaurants
 app.use('/api/restaurant', restauRouter);
 
+
 // Route pour télécharger et enregistrer l'image
 app.post('/upload', upload.single('image'), (req, res) => {
     if (!req.file) {

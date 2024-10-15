@@ -13,7 +13,10 @@ import {
     getAllRestaurants,
     deleteMeal,
     getMealsByRestaurant,
-    getMealsById
+    getMealsById,
+    addRating,
+    getAverageRating,
+    updateRating
 } from "../Controller/restau.js";
 
 const router = Router();
@@ -31,5 +34,11 @@ router.put("/meal/:id", restaurantAuthMiddleware, upload.single('meal_img'), upd
 router.delete("/meal/:id", restaurantAuthMiddleware, deleteMeal);
 router.get("/meals/restaurant/:restaurantId", getMealsByRestaurant);
 router.get("/meals/:id", getMealsById);
+
+router.post("/add", addRating);
+router.get('/average/:restaurantId', getAverageRating);
+router.put('/update/:ratingId', updateRating);
+
+
 
 export default router;
