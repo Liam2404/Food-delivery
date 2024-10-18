@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:3306
--- Généré le : ven. 18 oct. 2024 à 07:51
+-- Généré le : ven. 18 oct. 2024 à 09:06
 -- Version du serveur : 8.0.30
 -- Version de PHP : 8.3.10
 
@@ -70,15 +70,22 @@ INSERT INTO `meal` (`meal_id`, `meal_name`, `meal_description`, `meal_price`, `m
 -- --------------------------------------------------------
 
 --
--- Structure de la table `ratings`
+-- Structure de la table `rating`
 --
 
-CREATE TABLE `ratings` (
+CREATE TABLE `rating` (
   `id` int NOT NULL,
   `restaurant_id` bigint UNSIGNED DEFAULT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
-  `rating` int DEFAULT NULL
-) ;
+  `score` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `rating`
+--
+
+INSERT INTO `rating` (`id`, `restaurant_id`, `user_id`, `score`) VALUES
+(1, 1, 2, 4);
 
 -- --------------------------------------------------------
 
@@ -124,9 +131,9 @@ ALTER TABLE `meal`
   ADD KEY `fk_restaurant` (`restaurant_id`);
 
 --
--- Index pour la table `ratings`
+-- Index pour la table `rating`
 --
-ALTER TABLE `ratings`
+ALTER TABLE `rating`
   ADD PRIMARY KEY (`id`),
   ADD KEY `restaurant_id` (`restaurant_id`),
   ADD KEY `user_id` (`user_id`);
@@ -154,10 +161,10 @@ ALTER TABLE `meal`
   MODIFY `meal_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT pour la table `ratings`
+-- AUTO_INCREMENT pour la table `rating`
 --
-ALTER TABLE `ratings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `rating`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `restaurant`
@@ -176,11 +183,11 @@ ALTER TABLE `meal`
   ADD CONSTRAINT `fk_restaurant` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`);
 
 --
--- Contraintes pour la table `ratings`
+-- Contraintes pour la table `rating`
 --
-ALTER TABLE `ratings`
-  ADD CONSTRAINT `ratings_ibfk_1` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`),
-  ADD CONSTRAINT `ratings_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `client` (`id`);
+ALTER TABLE `rating`
+  ADD CONSTRAINT `rating_ibfk_1` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`),
+  ADD CONSTRAINT `rating_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `client` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
