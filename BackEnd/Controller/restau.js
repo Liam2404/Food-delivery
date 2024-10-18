@@ -245,70 +245,74 @@ const updateMeal = (req, res) => {
     });
 };
 
-const addRating = (req, res) => {
-    const { restaurant_id, rating } = req.body;
-    const user_id = req.session.user ? req.session.user.id : null;
+const addScore = (req, res) => {
+    const { restaurant_id, score } = req.body;
+    const user_id = req.session.user ? req.session.user.id : null; // Vérifie si l'utilisateur est connecté
 
+    console.log('User ID:', user_id); // Ajoute cette ligne
+
+    // Vérifie si l'utilisateur est connecté
     if (!user_id) {
         return res.status(401).json({ message: 'Utilisateur non connecté' });
     }
 
-    if (!rating || rating < 1 || rating > 5) {
-        return res.status(400).json({ message: 'La note doit être comprise entre 1 et 5' });
+    // Vérifie si le score est valide
+    if (!score || score < 1 || score > 5) {
+        return res.status(400).json({ message: 'Le score doit être compris entre 1 et 5' });
     }
 
-    const sql = 'INSERT INTO ratings (restaurant_id, user_id, rating) VALUES (?, ?, ?)';
-    db.query(sql, [restaurant_id, user_id, rating], (err, result) => {
+    const sql = 'INSERT INTO rating (restaurant_id, user_id, score) VALUES (?, ?, ?)';
+    db.query(sql, [restaurant_id, user_id, score], (err, result) => {
         if (err) {
-            console.error('Erreur lors de l\'ajout de la note :', err);
-            return res.status(500).json({ message: 'Erreur lors de l\'ajout de la note' });
+            console.error('Erreur lors de l\'ajout du score :', err);
+            return res.status(500).json({ message: 'Erreur lors de l\'ajout du score' });
         }
-        res.status(201).json({ message: 'Note ajoutée avec succès', ratingId: result.insertId });
+        res.status(201).json({ message: 'Score ajouté avec succès', scoreId: result.insertId });
     });
 };
 
 
-const getAverageRating = (req, res) => {
+
+const getAverageScore = (req, res) => {
     const { restaurantId } = req.params;
 
-    const sql = 'SELECT AVG(rating) AS averageRating FROM ratings WHERE restaurant_id = ?';
+    const sql = 'SELECT AVG(score) AS averageScore FROM rating WHERE restaurant_id = ?';
     db.query(sql, [restaurantId], (err, results) => {
         if (err) {
-            console.error('Erreur lors de la récupération des notes :', err);
-            return res.status(500).json({ message: 'Erreur lors de la récupération des notes' });
+            console.error('Erreur lors de la récupération des scores :', err);
+            return res.status(500).json({ message: 'Erreur lors de la récupération des scores' });
         }
 
-        const averageRating = results[0].averageRating ? parseFloat(results[0].averageRating).toFixed(2) : 'Pas de note';
-        res.status(200).json({ averageRating });
+        const averageScore = results[0].averageScore ? parseFloat(results[0].averageScore).toFixed(2) : 'Pas de score';
+        res.status(200).json({ averageScore });
     });
 };
 
-const updateRating = (req, res) => {
-    const { ratingId } = req.params;
-    const { rating } = req.body;
+const updateScore = (req, res) => {
+    const { scoreId } = req.params;
+    const { score } = req.body;
     const user_id = req.session.user ? req.session.user.id : null;
 
     if (!user_id) {
         return res.status(401).json({ message: 'Utilisateur non connecté' });
     }
 
-    if (!rating || rating < 1 || rating > 5) {
-        return res.status(400).json({ message: 'La note doit être comprise entre 1 et 5' });
+    if (!score || score < 1 || score > 5) {
+        return res.status(400).json({ message: 'Le score doit être compris entre 1 et 5' });
     }
 
-    const sql = 'UPDATE ratings SET rating = ? WHERE id = ? AND user_id = ?';
-    db.query(sql, [rating, ratingId, user_id], (err, result) => {
+    const sql = 'UPDATE rating SET score = ? WHERE id = ? AND user_id = ?';
+    db.query(sql, [score, scoreId, user_id], (err, result) => {
         if (err) {
-            console.error('Erreur lors de la mise à jour de la note :', err);
-            return res.status(500).json({ message: 'Erreur lors de la mise à jour de la note' });
+            console.error('Erreur lors de la mise à jour du score :', err);
+            return res.status(500).json({ message: 'Erreur lors de la mise à jour du score' });
         }
         if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Note non trouvée ou non autorisée' });
+            return res.status(404).json({ message: 'Score non trouvé ou non autorisé' });
         }
-        res.status(200).json({ message: 'Note mise à jour avec succès' });
+        res.status(200).json({ message: 'Score mis à jour avec succès' });
     });
 };
-
 
 export {
     restaurantLogin,
@@ -323,7 +327,7 @@ export {
     restaurantInfo,
     restaurantUpdate,
     updateMeal,
-    addRating,
-    getAverageRating,
-    updateRating,
+    addScore,
+    getAverageScore,
+    updateScore,
 };

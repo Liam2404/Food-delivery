@@ -3,20 +3,20 @@ import restaurantAuthMiddleware from '../middlewares/authMiddleware.js';
 import upload from '../upload.js';
 import {
     restaurantLogin,
+    restaurantRegister,
+    addMeal,
+    getMealsByRestaurant,
+    getAllRestaurants,
+    deleteMeal,
+    getMealsById,
     restaurantAll,
     restaurantDelete,
     restaurantInfo,
-    restaurantRegister,
     restaurantUpdate,
-    addMeal,
     updateMeal,
-    getAllRestaurants,
-    deleteMeal,
-    getMealsByRestaurant,
-    getMealsById,
-    addRating,
-    getAverageRating,
-    updateRating
+    addScore,
+    getAverageScore,
+    updateScore
 } from "../Controller/restau.js";
 
 const router = Router();
@@ -35,9 +35,9 @@ router.delete("/meal/:id", restaurantAuthMiddleware, deleteMeal);
 router.get("/meals/restaurant/:restaurantId", getMealsByRestaurant);
 router.get("/meals/:id", getMealsById);
 
-router.post("/add", addRating);
-router.get('/average/:restaurantId', getAverageRating);
-router.put('/update/:ratingId', updateRating);
+router.post("/add", addScore);
+router.get('/average/:restaurantId', getAverageScore);
+router.put('/update/:scoreId', updateScore);
 
 
 

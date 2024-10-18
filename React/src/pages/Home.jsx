@@ -7,7 +7,7 @@ export default function HomePage() {
   const [showMenuSidebar, setShowMenuSidebar] = useState(false);
   const [meals, setMeals] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [rating, setRating] = useState(0); // État pour gérer la note
+  const [score, setScore] = useState(0); // État pour gérer la note
 
   // Fonction pour récupérer les restaurants
   const fetchRestaurants = async () => {
@@ -77,35 +77,38 @@ export default function HomePage() {
     setSearchTerm(event.target.value);
   };
 
-  // Fonction pour soumettre la note
-  const submitRating = async (restaurantId) => {
-    if (rating < 1 || rating > 5) {
-      alert('Veuillez entrer une note entre 1 et 5.');
-      return; // Empêche la soumission si la note est en dehors des limites
+  const submitScore = async (restaurantId) => {
+    if (score < 1 || score > 5) {
+        alert('Veuillez entrer une note entre 1 et 5.');
+        return; // Empêche la soumission si la note est en dehors des limites
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/rating/${restaurantId}`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ rating }),
-      });
+        const response = await fetch(`http://localhost:3000/api/restaurant/add`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Inclure les cookies de session
+            body: JSON.stringify({ restaurant_id: restaurantId, score }), // Envoyer le restaurant_id
+        });
 
-      if (!response.ok) {
-        throw new Error('Erreur lors de la soumission de la note');
-      }
+        if (!response.ok) {
+            throw new Error('Erreur lors de la soumission de la note');
+        }
 
-      // Réinitialiser la note après soumission
-      setRating(0);
-      // Optionnel : Rafraîchir les données du restaurant pour mettre à jour la note moyenne
-      fetchRestaurants();
+        // Réinitialiser la note après soumission
+        setScore(0);
+        // Optionnel : Rafraîchir les données du restaurant pour mettre à jour la note moyenne
+        fetchRestaurants();
     } catch (error) {
-      console.error('Erreur lors de la soumission de la note :', error);
+        console.error('Erreur lors de la soumission de la note :', error);
     }
-  };
+};
+
+
+
 
   // Filtrer les restaurants en fonction du texte de recherche
   const filteredRestaurants = restaurants.filter(restaurant =>
@@ -147,23 +150,23 @@ export default function HomePage() {
                   <h5 className="card-title">{restaurant.name}</h5>
                   <p className="card-text">{restaurant.description}</p>
                   <p className="card-text">Cuisine: {restaurant.food_type}</p>
-                  <p className="card-text">Note: {restaurant.rating}</p>
+                  <p className="card-text">Note: {restaurant.score}</p> {/* Utilisation de score */}
                   <p className="card-text">Temps de livraison: {restaurant.deliveryTime}</p>
                   {/* Section pour noter le restaurant */}
                   <div>
-                    <label htmlFor={`rating-${restaurant.id}`}>Note:</label>
+                    <label htmlFor={`score-${restaurant.id}`}>Note:</label>
                     <input 
                       type="number" 
-                      id={`rating-${restaurant.id}`} 
+                      id={`score-${restaurant.id}`} 
                       min="1" 
                       max="5" 
-                      value={rating} 
-                      onChange={(e) => setRating(e.target.value)} 
+                      value={score} 
+                      onChange={(e) => setScore(e.target.value)} 
                       style={{ width: '60px', marginLeft: '5px' }}
                     />
                     <button 
                       className="btn btn-secondary ms-2" 
-                      onClick={() => submitRating(restaurant.id)}
+                      onClick={() => submitScore(restaurant.id)} // Utilisation de submitScore
                     >
                       Soumettre
                     </button>
