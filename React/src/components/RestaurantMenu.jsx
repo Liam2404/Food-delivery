@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import Checkout from './Checkout';
 
 const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
   const [cart, setCart] = useState([]);
@@ -21,6 +23,12 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
   // Fonction pour vider le panier
   const clearCart = () => {
     setCart([]);
+  };
+
+  const initialOptions = {
+    "client-id": "AcrTJxSOmYKZwh6NcDa5sNTXZC5x4aMtRAwU-fqWFwiKwaau_dXvLuIClPSbgEvIytXo8QZq2cMzllCu",
+    currency: "EUR",
+    intent: "capture",
   };
 
   // Récupérer les informations de l'utilisateur à partir du localStorage
@@ -93,20 +101,9 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
         <Button variant="secondary" onClick={handleCloseMenuSidebar}>
           Fermer
         </Button>
-        <Button
-          variant="primary"
-          onClick={() => {
-            if (user) {
-              const userId = user.id;
-              const url = `https://buy.stripe.com/test_7sI16We6Ah0LfDi3cc?client_reference_id=${userId}`;
-              window.location.href = url;
-            } else {
-              alert('Veuillez vous connecter avant de commander.');
-            }
-          }}
-        >
-          Commander
-        </Button>
+        <PayPalScriptProvider options={initialOptions}>
+        <Checkout />
+      </PayPalScriptProvider>
       </Modal.Footer>
     </Modal>
   );

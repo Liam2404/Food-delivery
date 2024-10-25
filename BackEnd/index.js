@@ -4,7 +4,6 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import mysql from 'mysql';
 import userRouter from './Router/user.js';
-import stripeRouter from './Router/stripe.js';
 import restauRouter from './Router/restau.js';
 import upload from './middlewares/multer.js';  
 
@@ -67,8 +66,6 @@ app.use(express.json());
 // Rendre le dossier 'uploads' accessible
 app.use('/uploads', express.static('uploads'));
 
-// Routes pour Stripe Webhook
-app.use('/webhook', stripeRouter);
 
 // Routes pour les utilisateurs
 app.use('/api/user', userRouter);
