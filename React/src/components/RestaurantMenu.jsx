@@ -8,17 +8,30 @@ import Checkout from './Checkout';
 const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState(null);
+  const [total, setTotal] = useState(0); // État pour le total
 
   // Fonction pour ajouter un plat au panier
   const addToCart = (item) => {
     const updatedCart = [...cart, item];
     setCart(updatedCart);
+    console.log("Plat ajouté au panier:", item);
+    console.log("Contenu du panier:", updatedCart);
   };
 
-  // Fonction pour calculer le total du panier avec 2 décimales
+
+  // Fonction pour calculer le total du panier
   const calculateTotal = () => {
-    return cart.reduce((total, item) => total + parseFloat(item.meal_price), 0).toFixed(2);
+    const total = cart.reduce((total, item) => total + parseFloat(item.meal_price), 0);
+    console.log("Total calculé:", total);
+    return total;
   };
+
+
+  // Mettre à jour le total chaque fois que le panier change
+  useEffect(() => {
+    const newTotal = calculateTotal();
+    setTotal(newTotal);
+  }, [cart]); // Dépendance sur cart
 
   // Fonction pour vider le panier
   const clearCart = () => {
@@ -29,6 +42,7 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
     "client-id": "AcrTJxSOmYKZwh6NcDa5sNTXZC5x4aMtRAwU-fqWFwiKwaau_dXvLuIClPSbgEvIytXo8QZq2cMzllCu",
     currency: "EUR",
     intent: "capture",
+    debug: true,
   };
 
   // Récupérer les informations de l'utilisateur à partir du localStorage
@@ -45,7 +59,6 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
         <Modal.Title>Menu de {restaurant.name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {/* Vérification si le menu existe et contient des éléments */}
         {meals && meals.length > 0 ? (
           <ListGroup variant="flush">
             {meals.map(item => (
@@ -56,7 +69,6 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
                     <p>{item.meal_description}</p>
                     <p className="mb-0">Prix: {parseFloat(item.meal_price).toFixed(2)} €</p>
                   </div>
-                  {/* Affichage de l'image du plat */}
                   {item.meal_img ? (
                     <img
                       src={`http://localhost:3000${item.meal_img}`}
@@ -77,7 +89,6 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
           <p>Aucun plat disponible pour ce restaurant.</p>
         )}
 
-        {/* Affichage du panier */}
         {cart.length > 0 && (
           <div className="mt-3">
             <h5>Panier</h5>
@@ -92,7 +103,7 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
               ))}
             </ListGroup>
             <hr />
-            <p className="text-right">Total: {calculateTotal()} €</p>
+            <p className="text-right">Total: {total.toFixed(2)} €</p> {/* Affichage du total */}
             <Button variant="danger" onClick={clearCart}>Vider le panier</Button>
           </div>
         )}
@@ -102,8 +113,8 @@ const RestaurantMenu = ({ restaurant, meals, handleCloseMenuSidebar }) => {
           Fermer
         </Button>
         <PayPalScriptProvider options={initialOptions}>
-        <Checkout />
-      </PayPalScriptProvider>
+          <Checkout total={total} />
+        </PayPalScriptProvider>
       </Modal.Footer>
     </Modal>
   );
