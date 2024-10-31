@@ -55,6 +55,136 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+
+
+
+.main-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.search-bar {
+  max-width: 400px;
+  margin: 20px auto;
+}
+
+.restaurant-grid .row {
+  display: flex; /* Utiliser flexbox pour aligner les cartes */
+  flex-wrap: wrap; /* Permet aux cartes de se répartir sur plusieurs lignes */
+  gap: 100px; /* Espacement entre les cartes */
+}
+
+.restaurant-card {
+  cursor: pointer;
+  border: none;
+  border-radius: 10px; /* Coins arrondis pour les cartes */
+  overflow: hidden;
+  transition: transform 0.2s ease;
+  width: 250px; /* Largeur fixe pour les cartes */
+  height: 250px; /* Hauteur fixe pour garder la forme carrée */
+  background-color: #ffffff; /* Fond blanc pour les cartes */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère sur les cartes */
+  margin: auto; /* Centrer les cartes */
+}
+
+.restaurant-card:hover {
+  transform: translateY(-5px);
+}
+
+.image-wrapper {
+  width: 100%;
+  padding-top: 75%;
+  position: relative;
+  overflow: hidden;
+}
+
+.restaurant-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+}
+
+.restaurant-img-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  color: #555;
+  height: 100%;
+}
+
+.card-body {
+  padding: 10px;
+  text-align: center;
+}
+
+.restaurant-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}
+
+
+/* Modale styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 500px;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+
+/* Styles pour le conteneur en version mobile */
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+  }
+
+  .menu-sidebar {
+    display: none; /* Sidebar cachée en mobile */
+  }
+
+  .restaurant-card {
+    width: 300px; /* Augmentez la largeur ici */
+    height: 300px; /* Augmentez la hauteur ici */
+  }
+  .restaurant-grid .row{
+    gap: 30px;
+  }
+}
+
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 
 const Checkout = ({ total }) => {
     const [{ options, isPending }, dispatch] = usePayPalScriptReducer();
     const [currency, setCurrency] = useState(options.currency);
+    const totalref=useRef(total);
 
     const onCurrencyChange = ({ target: { value } }) => {
         setCurrency(value);
@@ -17,8 +18,7 @@ const Checkout = ({ total }) => {
     };
 
     const onCreateOrder = (data, actions) => {
-        // S'assurer que le total est supérieur à zéro
-        const orderTotal = parseFloat(total);
+        const orderTotal = parseFloat(totalref.current);
         console.log("Total pour PayPal:", orderTotal);
         if (orderTotal > 0) {
             return actions.order.create({
@@ -26,14 +26,14 @@ const Checkout = ({ total }) => {
                     {
                         amount: {
                             currency_code: currency,
-                            value: orderTotal.toFixed(2), // Assurez-vous que le montant est formaté correctement
+                            value: orderTotal.toFixed(2), 
                         },
                     },
                 ],
             });
         } else {
             alert("Le total doit être supérieur à zéro.");
-            return Promise.reject(new Error("Total must be greater than zero.")); // Retourner une promesse rejetée
+            return Promise.reject(new Error("Total must be greater than zero.")); 
         }
     };
 
@@ -43,6 +43,10 @@ const Checkout = ({ total }) => {
             alert(`Transaction complétée par ${name}`);
         });
     };
+
+    useEffect (() => {
+        totalref.current = total;
+    }, [total]);
 
     return (
         <div className="checkout">
